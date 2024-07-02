@@ -1,16 +1,23 @@
 import { Button } from "@/components/ui/button";
+import { UserButton } from "@clerk/nextjs";
 
 
-export default function Home() {
+export default function SetupPage() {
   return (
     <div className="p-10">
+      <UserButton />
       <h1>Welcome to Nimark Admin</h1>
       <p>
         Nimark Admin is a dashboard for managing your Nimark account.
       </p>
-      <Button className="mt-10" variant="default">
-        Get Started
-      </Button>
+      <div className="flex-1">
+        <Button className="m-10" variant="default">
+          Get Started
+        </Button>
+        <Button>
+         Check News
+        </Button>
+      </div>
     </div>
   );
 }
