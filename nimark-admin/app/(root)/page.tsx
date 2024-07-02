@@ -5,7 +5,7 @@ import { UserButton } from "@clerk/nextjs";
 export default function SetupPage() {
   return (
     <div className="p-10">
-      <UserButton />
+      <UserButton  afterSignOutUrl="/" />
       <h1>Welcome to Nimark Admin</h1>
       <p>
         Nimark Admin is a dashboard for managing your Nimark account.
