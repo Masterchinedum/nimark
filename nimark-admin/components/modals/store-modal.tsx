@@ -11,8 +11,8 @@ export const StoreModal = () => {
         <Modal
             title="Create Store"
             description="Add a new store to manage products and categories"
-            isOpen={storeModal.isOpen}
-            onClose={storeModal.onClose}
+            isOpen={false}
+            onClose={() => {}}
         >
             Future Create Stiore from
         </Modal>
