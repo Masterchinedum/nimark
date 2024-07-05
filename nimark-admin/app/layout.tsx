@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+
+import { ModalProvider } from '@/providers/modal-provider';
+
 import {
   ClerkProvider,
   SignInButton,
-  SignedIn,
+  SigneIn,
   SignedOut,
   UserButton
 } from '@clerk/nextjs' ;
@@ -25,7 +28,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          <ModaProvider />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );
