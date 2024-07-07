@@ -15,6 +15,6 @@ export const StoreModal = () => {
             onClose={() => {}}
         >
             Future Create Stiore from
-        </Moda
+        </Modal>
     );
 };
