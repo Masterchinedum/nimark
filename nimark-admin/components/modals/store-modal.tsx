@@ -1,47 +1,58 @@
 "use client"
 
-import * as z from 'zod';
+import * as z from 'zod'
+import { Modal } from "@/components/ui/modal"
 import { useStoreModal } from '@/hooks/use-store-modal';
-import { Modal } from "@/components/ui/modal";
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '../ui/button';
-import { 
-    Form, 
-    FormControl, 
-    FormField, 
-    FormItem, 
-    FormLabel, 
-    FormMessage 
-} from '@/components/ui/form';
-
-
+import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-hot-toast' 
 
 const formSchema = z.object({
     name: z.string().min(1)
-});
+})
+
 
 export const StoreModal = () => {
-    const StoreModal = useStoreModal();
+
+    const [loading, setLoading] = useState(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-        },
-    });
-
+            name: ""
+        }
+    })
+    
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values);
-    };
+        try {
+            setLoading(true);
 
+            // throw new Error('x')
+
+            const response = await axios.post('/api/stores', values);
+            window.location.assign(`/${response.data.id}`)
+
+            console.log(response.data);
+            toast.success("Store created successfully")
+        } catch (err) {
+            toast.error(`Something went Wrong ${err}`);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const storeModal = useStoreModal();
     return (
         <Modal
             title="Create Store"
             description="Add a new store to manage products and categories"
-            isOpen={StoreModal.isOpen}
-            onClose={StoreModal.onClose}
+            isOpen={storeModal.isOpen}
+            onClose={storeModal.onClose}
         >
             <div>
                 <div className='py-2 pb-4 space-y-4'>
@@ -55,6 +66,7 @@ export const StoreModal = () => {
                                         <FormLabel>Name</FormLabel>
                                         <FormControl>
                                             <Input
+                                                disabled={loading}
                                                 placeholder='E-commerce'
                                                 {...field}
                                             />
@@ -64,16 +76,16 @@ export const StoreModal = () => {
                                 )}
                             />
                             <div className='flex items-center justify-end w-full pt-6 space-x-2'>
-                                <Button 
-                                variant= "outline" onClick={StoreModal.onClose}>
-                                    Cancel
-                                </Button>
-                                <Button type='submit'>Continue</Button>
+                                <Button
+                                    disabled={loading}
+                                    variant="outline"
+                                    onClick={storeModal.onClose}>Cancel</Button>
+                                <Button disabled={loading} type='submit' >Continue</Button>
                             </div>
                         </form>
                     </Form>
                 </div>
             </div>
         </Modal>
-    );
-};
+    )
+}
