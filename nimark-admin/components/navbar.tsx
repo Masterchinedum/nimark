@@ -1,3 +1,4 @@
+import { UserButton } from "@clerk/nextjs";
 
 
 const Navbar = () => {
@@ -6,6 +7,12 @@ const Navbar = () => {
             <div className="flex h-15 items-center px-4">
                 <div>
                     This will be a store switcher
+                </div>
+                <div>
+                    This will be the routes
+                </div>
+                <div>
+                    <UserButton />
                 </div>
             </div>
         </div>
