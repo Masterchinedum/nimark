@@ -12,7 +12,7 @@ const Navbar = () => {
                     This will be the routes
                 </div>
                 <div className="nl-auto flex items-center space-x-4">
-                    <UserButton />
+                    <UserButton afterSignOutUrl="/"/>
                 </div>
             </div>
         </div>
