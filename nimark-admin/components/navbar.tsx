@@ -11,7 +11,7 @@ const Navbar = () => {
                 <div>
                     This will be the routes
                 </div>
-                <div>
+                <div className="nl-auto flex items-center space-x-4">
                     <UserButton />
                 </div>
             </div>
