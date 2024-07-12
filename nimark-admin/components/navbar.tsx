@@ -20,6 +20,7 @@ const Navbar = async () => {
     }
   })
 
+
   return (
     <div className='border-b'>
         <div className='flex items-center h-16 px-4'>
@@ -27,7 +28,7 @@ const Navbar = async () => {
             <MainNav className='mx-6' />
             <div className='flex items-center ml-auto space-x-4'>
               <ThemeToggle />
-                <UserButton afterSignOutUrl='/'/>
+                <UserButton />
             </div>
         </div>
     </div>
