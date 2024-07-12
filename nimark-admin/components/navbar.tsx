@@ -28,7 +28,7 @@ const Navbar = async () => {
             <MainNav className='mx-6' />
             <div className='flex items-center ml-auto space-x-4'>
               <ThemeToggle />
-                <UserButton />
+                <UserButton afterSignOutUrl='/'/>
             </div>
         </div>
     </div>
