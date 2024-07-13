@@ -41,15 +41,24 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 {value.map((url) => (
                     <div key={url} className='relative w-[200px] h-[200px] rounded-md overflow-hidden'>
                         <div className='z-10 absolute top-2 right-2'>
-                            <Button type='button' onClick={() => onRemove(url)} variant="destructive" size="icon">
+                            <Button     
+                                type='button' 
+                                onClick={() => onRemove(url)} 
+                                variant="destructive" 
+                                size="icon">
                                 <Trash className='w-4 h-4'/>
                             </Button>
                         </div>
-                        <Image fill className='object-cover' alt='Image' src={url} />
+                        <Image 
+                            fill className='object-cover' 
+                            alt='Image' 
+                            src={url} />
                     </div>
                 ))}
             </div>
-            <CldUploadWidget onUpload={onUpload} uploadPreset='xd1zgfvt'>
+            <CldUploadWidget 
+            onUpload={onUpload} 
+            uploadPreset='sxicrgic'>
                 {({ open }) => {
                     const onClick = () => {
                         open();
