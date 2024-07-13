@@ -41,7 +41,7 @@ export async function PATCH (
     } finally {
 
     }
-}
+};
 
 //// Delete Method
 
