@@ -22,7 +22,7 @@ export async function GET (
         console.log('[BILLBOARD_GET]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
-}
+};
 
 export async function PATCH (
     req: Request,
@@ -76,7 +76,7 @@ export async function PATCH (
         console.log('[BILLBOARD_PATCH]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
-}
+};
 
 //// Delete Method
 
@@ -117,4 +117,4 @@ export async function DELETE (
         console.log('[BILLBOARD_DELETE]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
-}
+};
