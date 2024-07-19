@@ -6,9 +6,9 @@ import { Store } from "@prisma/client";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown, Store as StoreIcon} from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle, Store as StoreIcon} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -82,6 +82,21 @@ export default function StoreSwitcher({
                                         />
                                 </CommandItem>
                             ))}
+                        </CommandGroup>
+                    </CommandList>
+                    <CommandSeparator />
+                    <CommandList>
+                        <CommandGroup>
+                            <CommandItem
+                                 onSelect={() => {
+                                    setOpen(false);
+                                    storeModal.onOpen();
+                                 }}
+                            >
+                                <PlusCircle className="mr-2 h-5 w-5" />
+                                Create Store
+
+                            </CommandItem>
                         </CommandGroup>
                     </CommandList>
                 </Command>
