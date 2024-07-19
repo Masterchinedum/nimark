@@ -82,10 +82,20 @@ export default function StoreSwitcher({
                         <CommandEmpty>No store found.</CommandEmpty>
                         <CommandGroup heading="Stores">
                             {formattedItems.map((store, index) =>(
-                                <CommandItem key={index} onSelect={() => onStoreSelect(store)} className="text-sm">
+                                <CommandItem 
+                                    key={index} 
+                                    onSelect={() => onStoreSelect(store)} 
+                                    className="text-sm"
+                                >
                                     <StoreIcon className="w-4 h-4 mr-2" />
                                     {store.label}
-                                    <Check className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "opacity-100" : "opacity-0")} />
+                                    <Check 
+                                        className={cn("ml-auto h-4 w-4", 
+                                        currentStore?.value === store.value 
+                                            ? "opacity-100" 
+                                            : "opacity-0"
+                                        )} 
+                                    />
                                 </CommandItem>
                             ))}
                         </CommandGroup>
@@ -93,8 +103,10 @@ export default function StoreSwitcher({
                     <CommandSeparator />
                     <CommandList>
                         <CommandGroup>
-                            <CommandItem onSelect={() => {
-                                setOpen(false); storeModal.onOpen();
+                            <CommandItem 
+                                onSelect={() => {
+                                setOpen(false); 
+                                storeModal.onOpen();
                             }}>
                                 <PlusCircle className="w-5 h-5 mr-2" />
                                 Create Store
