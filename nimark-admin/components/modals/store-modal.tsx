@@ -24,9 +24,9 @@ export const StoreModal = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: ""
-        }
-    })
+            name: "",
+        },
+    });
     
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -86,5 +86,5 @@ export const StoreModal = () => {
                 </div>
             </div>
         </Modal>
-    )
-}
+    );
+};
