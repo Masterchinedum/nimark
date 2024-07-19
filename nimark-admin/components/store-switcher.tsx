@@ -61,7 +61,15 @@ export default function StoreSwitcher({
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" role="combobox" aria-expanded={open} aria-label="Select a store" className={cn("w-[200px] justify-between", className)}>
+                <Button 
+                    variant="outline" 
+                    size="sm" 
+                    role="combobox" 
+                    aria-expanded={open} 
+                    aria-label="Select a store" 
+                    className={cn("w-[200px] justify-between", 
+                    className)}
+                >
                     <StoreIcon className="w-4 h-4 mr-2" />
                         {currentStore?.label}
                     <ChevronsUpDown className="w-4 h-4 ml-auto opacity-50 shrink-0" />
