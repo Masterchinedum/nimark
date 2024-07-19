@@ -59,7 +59,7 @@ export default function StoreSwitcher({
         router.push(`/${store.value}`)
     }
     return (
-        <Popover onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" role="combobox" aria-expanded={open} aria-label="Select a store" className={cn("w-[200px] justify-between", className)}>
                     <StoreIcon className="w-4 h-4 mr-2" />
