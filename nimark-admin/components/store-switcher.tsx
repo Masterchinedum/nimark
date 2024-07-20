@@ -77,7 +77,8 @@ export default function StoreSwitcher({
                                       }}
                                     className="text-sm"
                                     style={{ backgroundColor: 'black', color: "pink", border: "1px solid orange", padding: "5px" }}
-                                >
+                                > 
+
                                     <StoreIcon className="w-4 h-4 mr-2" />
                                     {store.label}
                                     <Check
@@ -89,6 +90,7 @@ export default function StoreSwitcher({
                                         )}
                                     />
                                 </CommandItem>
+
                             ))}
                         </CommandGroup>
                     </CommandList>
