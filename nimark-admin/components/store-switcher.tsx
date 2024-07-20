@@ -47,7 +47,7 @@ export default function StoreSwitcher({
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
                 <Command>
-                    {/* <CommandList> */}
+                    <CommandList>
                         <CommandInput placeholder="Search Store..." />
                         <CommandEmpty>No store found.</CommandEmpty>
                         <CommandGroup heading="Stores">
@@ -59,7 +59,7 @@ export default function StoreSwitcher({
                                 </CommandItem>
                             ))}
                         </CommandGroup>
-                    {/* </CommandList> */}
+                    </CommandList>
                     <CommandSeparator />
                     <CommandList>
                         <CommandGroup>
