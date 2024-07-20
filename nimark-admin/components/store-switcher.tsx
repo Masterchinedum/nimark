@@ -8,13 +8,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useParams, useRouter } from "next/navigation";
 import { Button }  from "./ui/button";
 import { cn } from "@/lib/utils";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "./ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
 interface StoreSwitcherProps extends PopoverTriggerProps {
     items: Store[];
 }
+
 export default function StoreSwitcher({
     className,
     items = []
@@ -28,20 +29,32 @@ export default function StoreSwitcher({
         value: item.id
     }));
 
-    const currentStore = formattedItems.find((item) => item.value === params.storeId)
-
+    const currentStore = formattedItems.find((item) => item.value === params.storeId);
     const [open, setOpen] = useState(false);
 
     const onStoreSelect = (store: { value: string, label: string }) => {
-        setOpen(true);
-        router.push(`/${store.value}`)
+        console.log("Store selected:", store);
+        setOpen(false);
+        router.push(`/${store.value}`);
     }
+
     return (
-        <Popover onOpenChange={setOpen}>
+        <Popover 
+            open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline" size="sm" role="combobox" aria-expanded={open} aria-label="Select a store" className={cn("w-[200px] justify-between", className)}>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        console.log('onClick triggeredbutton');
+                      }}
+                    size="sm"
+                    role="combobox"
+                    aria-expanded={open}
+                    aria-label="Select a store"
+                    className={cn("w-[200px] justify-between", className)}
+                >
                     <StoreIcon className="w-4 h-4 mr-2" />
-                        {currentStore?.label}
+                    {currentStore?.label}
                     <ChevronsUpDown className="w-4 h-4 ml-auto opacity-50 shrink-0" />
                 </Button>
             </PopoverTrigger>
@@ -51,11 +64,30 @@ export default function StoreSwitcher({
                         <CommandInput placeholder="Search Store..." />
                         <CommandEmpty>No store found.</CommandEmpty>
                         <CommandGroup heading="Stores">
-                            {formattedItems.map((store, index) =>(
-                                <CommandItem key={index} onSelect={() => onStoreSelect(store)} className="text-sm">
+                            {formattedItems.map((store) => (
+                                <CommandItem
+                                    key={store.value}
+                                    onSelect={() => {
+                                        console.log("Store item clicked:", store);
+                                        onStoreSelect(store)
+                                    }}
+                                    onClick={() => {
+                                        console.log('onClick triggered');
+                                        // onStoreSelect(store);
+                                      }}
+                                    className="text-sm"
+                                    style={{ backgroundColor: 'black', color: "pink", border: "1px solid orange", padding: "5px" }}
+                                >
                                     <StoreIcon className="w-4 h-4 mr-2" />
                                     {store.label}
-                                    <Check className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "opacity-100" : "opacity-0")} />
+                                    <Check
+                                        className={cn(
+                                            "ml-auto h-4 w-4",
+                                            currentStore?.value === store.value
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                        )}
+                                    />
                                 </CommandItem>
                             ))}
                         </CommandGroup>
@@ -63,10 +95,14 @@ export default function StoreSwitcher({
                     <CommandSeparator />
                     <CommandList>
                         <CommandGroup>
-                            
-                            <CommandItem onSelect={() => {
-                                setOpen(false); storeModal.onOpen();
-                            }}>
+                            <CommandItem
+                                onSelect={() => {
+                                    console.log("Create store clicked");
+                                    setOpen(false);
+                                    storeModal.onOpen();
+                                }}
+                                style={{ backgroundColor: "black", color: "white", border: "1px solid blue", padding: "5px" }}
+                            >
                                 <PlusCircle className="w-5 h-5 mr-2" />
                                 Create Store
                             </CommandItem>
