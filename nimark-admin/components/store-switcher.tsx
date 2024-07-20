@@ -80,7 +80,7 @@ export default function StoreSwitcher({ items = [] }: StoreSwitcherProps) {
                     <Check className="w-4 h-4 text-green-500" />
                   )}
                 </button>
-              ))}
+              ))};
             </div>
 
             <div className="p-2 border-t">
