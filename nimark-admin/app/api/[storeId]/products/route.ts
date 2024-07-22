@@ -37,9 +37,9 @@ export async function POST(
 
         if (!sizeId) new NextResponse("Size id is required", { status: 400});
 
-        if (!isFeatured) new NextResponse("Featured is required", { status: 400});
+        // if (!isFeatured) new NextResponse("Featured is required", { status: 400});
 
-        if (!isArchived) new NextResponse("Archived is required", { status: 400});
+        // if (!isArchived) new NextResponse("Archived is required", { status: 400});
 
         if (!images || !images.length) {
             return new NextResponse("Image is required", { status: 400});
