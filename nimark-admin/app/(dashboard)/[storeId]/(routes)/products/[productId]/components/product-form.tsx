@@ -134,7 +134,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         name="images"
                         render={({field}) => (
                             <FormItem>
-                                <FormLabel>Background Image</FormLabel>
+                                <FormLabel>Images</FormLabel>
                                 <FormControl>
                                     <ImageUpload
                                         value={field.value.map((image) => image.url)}
