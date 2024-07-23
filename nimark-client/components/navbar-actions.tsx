@@ -1,4 +1,4 @@
-
+"use client"
 
 const NavbarActions = () => {
 
@@ -8,3 +8,5 @@ const NavbarActions = () => {
         </div>
     )
 }
+
+export default NavbarActions;
