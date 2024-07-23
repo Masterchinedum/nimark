@@ -65,9 +65,9 @@ export async function PATCH (
 
         if (!sizeId) new NextResponse("Size id is required", { status: 400});
 
-        if (!isFeatured) new NextResponse("Featured is required", { status: 400});
+        // if (!isFeatured) new NextResponse("Featured is required", { status: 400});
 
-        if (!isArchived) new NextResponse("Archived is required", { status: 400});
+        // if (!isArchived) new NextResponse("Archived is required", { status: 400});
 
         if (!images || !images.length) {
             return new NextResponse("Image is required", { status: 400});
@@ -168,4 +168,5 @@ export async function DELETE (
         console.log('[PRODUCT_DELETE]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
+    
 }
