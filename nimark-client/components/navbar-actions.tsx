@@ -13,7 +13,9 @@ const NavbarActions = () => {
                     color='white'
                 />
             </Button>
-            This is an action
+            <span className='ml-2 text-sm font-medium text-white'>
+                
+            </span>
         </div>
     )
 }
