@@ -12,7 +12,8 @@ const Billboard: React.FC<BillboardProps> = ({ data }) => {
                 style={{ backgroundImage: `url(${data?.imageUrl})` }}>
                     <div className='flex flex-col items-center justify-center w-full h-full text-center gap-y-8'>
                         <div className='max-w-xs text-3xl font-bold sm:text-5xl lg:text-6xl sm:max-w-xl'>
-                            {data?.label}
+                            {data?.label} 
+                            {/* whether to remove the ? */}
                         </div>
                     </div>
                 </div>
