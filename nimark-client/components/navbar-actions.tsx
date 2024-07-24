@@ -8,7 +8,10 @@ const NavbarActions = () => {
     return (
         <div className="flex items-center ml-auto gap-x-4">
             <Button >
-                <ShoppingBag />
+                <ShoppingBag 
+                    size={20}
+                    color='white'
+                />
             </Button>
             This is an action
         </div>
