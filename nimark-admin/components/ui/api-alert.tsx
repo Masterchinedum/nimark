@@ -10,16 +10,17 @@ interface ApiAlertProps {
     title: string;
     description: string;
     variant: 'public' | 'admin';
-}
+};
 
 const textMap: Record<ApiAlertProps["variant"], string> = {
     public: 'Public',
     admin: 'Admin'
-}
+};
+
 const variantMap: Record<ApiAlertProps["variant"], BadgeProps['variant']> = {
     public: 'secondary',
     admin: 'destructive'
-}
+};
 
 export const ApiAlert: React.FC<ApiAlertProps> = ({
     title,
@@ -30,6 +31,7 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
         navigator.clipboard.writeText(description);
         toast.success("API Route copied to the clipboard");
     };
+
     return (
         <Alert>
             <Server className="w-4 h-4" />
@@ -49,4 +51,4 @@ export const ApiAlert: React.FC<ApiAlertProps> = ({
             </AlertDescription>
         </Alert>
     )
-}
+};

@@ -46,7 +46,7 @@ export const SettingsForm: React.FC<SettingsFromProps> = ({ initialData }) => {
     const onSubmit = async (data: SettingsFormValues) => {
         try {
             setLoading(true);
-            await axios.patch(`/api/stores/${params.storeId}`, data)
+            await axios.patch(`/api/stores/${params.storeId}`, data);
             router.refresh();
             toast.success("Store updated.")
         } catch(err) {
@@ -121,4 +121,4 @@ export const SettingsForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                 variant='public'/>
         </>
     )
-}
+};
