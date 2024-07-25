@@ -2,7 +2,7 @@
 
 import { Product } from "@/types";
 import Image from "next/image";
-// import IconButton from "@/components/ui/icon-button";
+import IconButton from "@/components/ui/icon-button";
 import { Expand, ShoppingCart } from "lucide-react";
 // import Currency from "@/components/ui/currency";
 import { useRouter } from "next/navigation";
@@ -43,14 +43,14 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
                     alt="Images"
                     className="object-cover rounded-md aspect-square" />
                 <div className="absolute w-full px-6 transition opacity-0 group-hover:opacity-100 bottom-5">
-                    {/* <div className="flex justify-center gap-x-6">
+                    <div className="flex justify-center gap-x-6">
                         <IconButton
                             onClick={onPreview}
                             icon={<Expand size={20} className="text-gray-600" />}/>
                         <IconButton
                             onClick={onAddToCart}
                             icon={<ShoppingCart size={20} className="text-gray-600" />}/>
-                    </div> */}
+                    </div>
                 </div>
             </div>
             {/* Description */}
