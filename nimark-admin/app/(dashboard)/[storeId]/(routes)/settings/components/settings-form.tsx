@@ -33,6 +33,7 @@ export const SettingsForm: React.FC<SettingsFromProps> = ({ initialData }) => {
     const params = useParams();
     const router = useRouter();
     const origin = useOrigin();
+    
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -109,6 +110,10 @@ export const SettingsForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                     <Button disabled={loading} className='ml-auto' type='submit'>Save Changes</Button>
                 </form>
             </Form>
+            <Separator />
+            <div>
+            <p>Generated URL:', {origin}/api/stores/{params.storeId} </p>
+            </div>
             <Separator />
             <ApiAlert
                 title="NEXT_PUBLIC_API_URL"

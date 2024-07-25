@@ -32,7 +32,7 @@ export async function PATCH (
             data: {
                 name
             }
-        })
+        });
 
         return NextResponse.json(store);
     } catch (err) {
