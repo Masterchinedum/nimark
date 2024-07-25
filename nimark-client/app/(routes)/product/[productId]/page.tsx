@@ -30,10 +30,8 @@ const ProductPage: React.FC<ProductPageProps> = async ({
                             <Info data={product} />
                         </div>
                     </div> */}
-                    gallery & Informaton
                     <hr className="my-10"/>
                     <ProductList title="Related Items" items={suggestProducts} />
-                    Right here you will get infor of the product
                 </div>
             </Container>
         </div>
