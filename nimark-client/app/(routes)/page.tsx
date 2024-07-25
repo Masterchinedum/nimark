@@ -15,7 +15,6 @@ const HomePage = async () => {
                 <Billboard data={billboard} />
                 <div className="flex flex-col px-4 gap-y-8 sm:px-6 lg:px-8">
                     <ProductList title="Featured Products" items={products} />
-                    Product List
                 </div>
             </div>
         </Container>
