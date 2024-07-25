@@ -10,4 +10,4 @@ const PreviewModal = () => {
     )
 }
 
-export default PreviewModal;bu
+export default PreviewModal;
