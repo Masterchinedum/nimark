@@ -12,8 +12,8 @@ interface ProductPageProps {
 }
 
 const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
-    // const product = await getProduct(params.productId);
-    // const suggestProducts = await getProducts({ categoryId: product?.category?.id })
+    const product = await getProduct(params.productId);
+    const suggestProducts = await getProducts({ categoryId: product?.category?.id })
     return ( 
         <div className="bg-white">
             <Container>
@@ -28,7 +28,7 @@ const ProductPage: React.FC<ProductPageProps> = async ({ params }) => {
                     </div> */}
                     gallery & Informaton
                     <hr className="my-10"/>
-                    {/* <ProductList title="Related Items" items={suggestProducts} /> */}
+                    <ProductList title="Related Items" items={suggestProducts} />
                     Right here you will get infor of the product
                 </div>
             </Container>

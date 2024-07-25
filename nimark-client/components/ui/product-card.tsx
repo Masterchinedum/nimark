@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
     const router = useRouter();
     const handleClick = () => {
         router.push(`/product/${data?.id}`);
-        console.log('hello viewPage');
+   
     }
 
     const onPreview: MouseEventHandler<HTMLButtonElement> = (event) => {
