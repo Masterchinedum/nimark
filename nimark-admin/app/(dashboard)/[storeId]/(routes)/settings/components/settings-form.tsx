@@ -111,10 +111,6 @@ export const SettingsForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                 </form>
             </Form>
             <Separator />
-            <div>
-            <p>Generated URL:', {origin}/api/stores/{params.storeId} </p>
-            </div>
-            <Separator />
             <ApiAlert
                 title="NEXT_PUBLIC_API_URL"
                 description={`${origin}/api/${params.storeId}`}
