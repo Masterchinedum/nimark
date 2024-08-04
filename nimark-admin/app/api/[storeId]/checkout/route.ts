@@ -1,7 +1,6 @@
+import { flutterwave } from "@/lib/flutterwave";
 import prismadb from "@/lib/prismadb";
-import { stripe } from "@/lib/stripe";
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 
 const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
@@ -14,10 +13,14 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request, { params }: { params: { storeId: string } }) {
-    const { productIds } = await req.json();
+    const { productIds, customerEmail } = await req.json();
 
-    if(!productIds || productIds.length === 0) {
+    if (!productIds || productIds.length === 0) {
         return new NextResponse("Product ids are required", { status: 400 });
+    }
+
+    if (!customerEmail) {
+        return new NextResponse("Customer email is required", { status: 400 });
     }
 
     const products = await prismadb.product.findMany({
@@ -26,22 +29,7 @@ export async function POST(req: Request, { params }: { params: { storeId: string
                 in: productIds
             }
         }
-    })
-
-    const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
-
-    products.forEach((product) => {
-        line_items.push({
-            quantity: 1,
-            price_data: {
-                currency: 'USD',
-                product_data: {
-                    name: product.name,
-                },
-                unit_amount: Number(product.price) * 100
-            }
-        })
-    })
+    });
 
     const order = await prismadb.order.create({
         data: {
@@ -57,23 +45,38 @@ export async function POST(req: Request, { params }: { params: { storeId: string
                 }))
             }
         }
-    })
+    });
 
-    const session = await stripe.checkout.sessions.create({
-        line_items,
-        mode: "payment",
-        billing_address_collection: "required",
-        phone_number_collection: {
-            enabled: true,
+    const totalAmount = products.reduce((total, product) => total + Number(product.price), 0);
+
+    const payload = {
+        tx_ref: order.id,
+        amount: totalAmount,
+        currency: "NGN",
+        redirect_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
+        customer: {
+            email: customerEmail,
         },
-        success_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
-        cancel_url: `${process.env.FRONTEND_STORE_URL}/cart?cancelled=1`,
-        metadata: {
+        customizations: {
+            title: "Your Store Name",
+            logo: "https://your-logo-url.com",
+        },
+        meta: {
             orderId: order.id
         }
-    })
+    };
 
-    return NextResponse.json({ url: session.url }, {
-        headers: corsHeaders,
-    })
+    try {
+        const response = await flutterwave.Charge.card(payload);
+        if (response.status === 'success') {
+            return NextResponse.json({ url: response.data.link }, {
+                headers: corsHeaders,
+            });
+        } else {
+            throw new Error('Flutterwave charge creation failed');
+        }
+    } catch (error) {
+        console.error('Flutterwave error:', error);
+        return new NextResponse("Error creating payment", { status: 500 });
+    }
 }
