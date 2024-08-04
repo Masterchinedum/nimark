@@ -5,13 +5,14 @@ import Currency from '@/components/ui/currency';
 import useCart from '@/hooks/use-cart';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 const Summary = () => {
     const searchParams = useSearchParams();
     const items = useCart(state => state.items);
     const removeAll = useCart(state => state.removeAll);
+    const [email, setEmail] = useState('');
     const totalPrice = items.reduce((total, item) => total + Number(item.price), 0)
 
     useEffect(() => {
@@ -25,11 +26,20 @@ const Summary = () => {
     }, [searchParams, removeAll])
 
     const onCheckout = async () => {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
-            productIds: items.map(item => item.id),
-        });
+        if (!email) {
+            toast.error("Please enter your email address");
+            return;
+        }
+        try {
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+                productIds: items.map(item => item.id),
+                customerEmail: email,
+            });
 
-        window.location = response.data.url
+            window.location = response.data.url;
+        } catch (error) {
+            toast.error("Something went wrong. Please try again.");
+        }
     }
 
     return ( 
@@ -43,6 +53,13 @@ const Summary = () => {
                     <Currency value={totalPrice} />
                 </div>
             </div>
+            <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className='w-full px-3 py-2 mt-4 border rounded-md'
+            />
             <Button disabled={items.length === 0} className='w-full mt-6' onClick={onCheckout}>
                 Checkout
             </Button>
