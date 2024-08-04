@@ -28,6 +28,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "flutterwave-node-v3": "^1.1.10",
     "framer-motion": "^11.3.8",
     "lucide-react": "^0.399.0",
     "next-cloudinary": "^6.6.2",
