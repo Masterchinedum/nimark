@@ -1,63 +1,86 @@
-import Stripe from "stripe";
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import { stripe } from "@/lib/stripe";
+import { flutterwave, flutterwaveEncKey } from "@/lib/flutterwave";
 import prismadb from "@/lib/prismadb";
+import { NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-    const body = await req.text();
-    const signature = headers().get("Stripe-Signature") as string;
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
-    let event: Stripe.Event;
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
+export async function POST(req: Request, { params }: { params: { storeId: string } }) {
+    const { productIds, customerEmail } = await req.json();
+
+    if (!productIds || productIds.length === 0) {
+        return new NextResponse("Product ids are required", { status: 400 });
+    }
+
+    if (!customerEmail) {
+        return new NextResponse("Customer email is required", { status: 400 });
+    }
+
+    const products = await prismadb.product.findMany({
+        where: {
+            id: {
+                in: productIds
+            }
+        }
+    });
+
+    const order = await prismadb.order.create({
+        data: {
+            storeId: params.storeId,
+            isPaid: false,
+            orderItems: {
+                create: productIds.map((productId: string) => ({
+                    product: {
+                        connect: {
+                            id: productId
+                        }
+                    }
+                }))
+            }
+        }
+    });
+
+    const totalAmount = products.reduce((total, product) => total + Number(product.price), 0);
+
+    const payload = {
+        tx_ref: order.id,
+        amount: totalAmount,
+        currency: "NGN",
+        redirect_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
+        customer: {
+            email: customerEmail,
+        },
+        customizations: {
+            title: "Your Store Name",
+            logo: "https://your-logo-url.com",
+        },
+        meta: {
+            orderId: order.id
+        }
+    };
 
     try {
-        event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!)
-    } catch (error: any) {
-         return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
-    }
-
-    const session = event.data.object as Stripe.Checkout.Session;
-    const address = session?.customer_details?.address;
-
-    const addressComponents = [
-        address?.line1,
-        address?.line2,
-        address?.city,
-        address?.state,
-        address?.postal_code,
-        address?.country,
-    ];
-
-    const addressString = addressComponents.filter(c => c !== null).join(', ');
-
-    if(event.type === 'checkout.session.completed') {
-        const order = await prismadb.order.update({
-            where: {
-                id: session?.metadata?.orderId,
-            },
-            data: {
-                isPaid: true,
-                address: addressString,
-                phone: session?.customer_details?.phone || ''
-            },
-            include: {
-                orderItems: true,
-            }
+        const response = await flutterwave.Charge.card({
+            ...payload,
+            enckey: flutterwaveEncKey,
         });
-
-        const productIds = order.orderItems.map(orderItem => orderItem.productId);
-
-        await prismadb.product.updateMany({
-            where: {
-                id: {
-                    in: [...productIds]
-                },
-            },
-            data: {
-                isArchived: true,
-            }
-        })
+        
+        if (response.status === 'success') {
+            return NextResponse.json({ url: response.data.link }, {
+                headers: corsHeaders,
+            });
+        } else {
+            throw new Error('Flutterwave charge creation failed');
+        }
+    } catch (error) {
+        console.error('Flutterwave error:', error);
+        return new NextResponse(`Error creating payment: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
     }
-
-    return new NextResponse(null, { status: 200 });
 }

@@ -27,6 +27,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "flutterwave-node-v3": "^1.1.10",
     "framer-motion": "^11.3.8",
@@ -46,6 +47,7 @@
   },
   "devDependencies": {
     "@babel/preset-react": "^7.24.7",
+    "@types/cors": "^2.8.17",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
