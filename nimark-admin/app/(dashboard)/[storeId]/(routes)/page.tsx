@@ -7,7 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import prismadb from "@/lib/prismadb"
-// import { formatter } from "@/lib/utils";
+import { formatter } from "@/lib/utils";
 import { CreditCard, DollarSign, Package } from "lucide-react";
 
 interface DashboardPageProps {
@@ -38,9 +38,9 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
               <DollarSign className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              {/* <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold">
                 {formatter.format(totalRevenue)}
-              </div> */}
+              </div>
             </CardContent>
           </Card>
           <Card>
@@ -60,6 +60,19 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
               <CardTitle className="text-sm font-medium">
                 Products in Stock
+              </CardTitle>
+              <Package className="w-4 h-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {stockCount}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+              <CardTitle className="text-sm font-medium">
+                Products out of Stock
               </CardTitle>
               <Package className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
