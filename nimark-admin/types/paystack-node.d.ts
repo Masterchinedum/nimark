@@ -1,3 +1,5 @@
+//nimark-admin/types/paystack-node.d.ts
+
 declare module 'paystack-node' {
     class PayStack {
       constructor(secretKey: string, environment?: string);
