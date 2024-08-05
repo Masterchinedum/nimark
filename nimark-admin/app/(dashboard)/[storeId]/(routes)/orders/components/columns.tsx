@@ -1,4 +1,4 @@
-//nimark-admin/app/(dashboard)/[storeId]/(routes)/orders/components/colu.tsx
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/orders/components/column.tsx
 
 "use client"
 import { ColumnDef } from '@tanstack/react-table';

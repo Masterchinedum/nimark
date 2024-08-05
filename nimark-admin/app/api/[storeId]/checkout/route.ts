@@ -51,14 +51,18 @@ export async function POST(req: Request, { params }: { params: { storeId: string
     });
 
     try {
+        // Convert metadata object to JSON string
+        const metadata = JSON.stringify({
+            order_id: order.id,
+        });
+
+        // Initialize Paystack transaction
         const response = await paystack.initializeTransaction({
             reference: `ORDER_${order.id}`,
             amount: totalAmount,
             email: email,
-            callback_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
-            metadata: {
-                order_id: order.id,
-            }
+            callback_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1&reference=ORDER_${order.id}`,
+            metadata: metadata, // Pass metadata as string
         });
 
         if (response.body.status === false) {

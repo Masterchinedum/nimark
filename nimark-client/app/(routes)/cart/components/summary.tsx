@@ -15,17 +15,27 @@ const Summary = () => {
     const removeAll = useCart(state => state.removeAll);
     const [email, setEmail] = useState('');
 
-    const totalPrice = items.reduce((total, item) => total + Number(item.price), 0)
+    const totalPrice = items.reduce((total, item) => total + Number(item.price), 0);
 
     useEffect(() => {
-        if(searchParams.get('success')) {
-            toast.success("Payment completed.");
-            removeAll();
+        const reference = searchParams.get('reference');
+        // Verify payment if redirected from Paystack with a reference
+        if (searchParams.get('success') && reference) {
+            axios.get(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+                params: { reference },
+            })
+            .then(() => {
+                toast.success("Payment completed.");
+                removeAll();
+            })
+            .catch(() => {
+                toast.error("Error verifying payment.");
+            });
         }
-        if(searchParams.get("cancelled")) {
-            toast.error("Something went wrong.")
+        if (searchParams.get("cancelled")) {
+            toast.error("Something went wrong.");
         }
-    }, [searchParams, removeAll])
+    }, [searchParams, removeAll]);
 
     const onCheckout = async () => {
         if (!email) {
@@ -34,17 +44,19 @@ const Summary = () => {
         }
 
         try {
+            // Initialize Paystack transaction
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
                 productIds: items.map(item => item.id),
                 email: email,
             });
+            // Redirect to Paystack payment page
             window.location.href = response.data.url;
         } catch (error) {
             toast.error("Something went wrong. Please try again.");
         }
     }
 
-    return ( 
+    return (
         <div className='px-4 py-6 mt-16 rounded-lg bg-gray-50 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8'>
             <h2 className='text-lg font-medium text-gray-900'>Order Summary</h2>
             <div className='mt-6 space-y-4'>
@@ -66,7 +78,7 @@ const Summary = () => {
                 Checkout
             </Button>
         </div>
-     );
+    );
 }
- 
+
 export default Summary;
