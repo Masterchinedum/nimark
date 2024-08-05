@@ -1,5 +1,6 @@
-import { flutterwave, flutterwaveEncKey } from "@/lib/flutterwave";
+// nimark-admin/app/api/[storeId]/checkout/route.ts
 import prismadb from "@/lib/prismadb";
+import paystack from "@/lib/paystack";
 import { NextResponse } from "next/server";
 
 const corsHeaders = {
@@ -13,13 +14,13 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request, { params }: { params: { storeId: string } }) {
-    const { productIds, customerEmail } = await req.json();
+    const { productIds, email } = await req.json();
 
     if (!productIds || productIds.length === 0) {
         return new NextResponse("Product ids are required", { status: 400 });
     }
 
-    if (!customerEmail) {
+    if (!email) {
         return new NextResponse("Customer email is required", { status: 400 });
     }
 
@@ -30,6 +31,8 @@ export async function POST(req: Request, { params }: { params: { storeId: string
             }
         }
     });
+
+    const totalAmount = products.reduce((total, product) => total + Number(product.price), 0) * 100; // Amount in kobo
 
     const order = await prismadb.order.create({
         data: {
@@ -47,40 +50,26 @@ export async function POST(req: Request, { params }: { params: { storeId: string
         }
     });
 
-    const totalAmount = products.reduce((total, product) => total + Number(product.price), 0);
-
-    const payload = {
-        tx_ref: order.id,
-        amount: totalAmount,
-        currency: "NGN",
-        redirect_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
-        customer: {
-            email: customerEmail,
-        },
-        customizations: {
-            title: "Your Store Name",
-            logo: "https://your-logo-url.com",
-        },
-        meta: {
-            orderId: order.id
-        }
-    };
-
     try {
-        const response = await flutterwave.Charge.card({
-            ...payload,
-            enckey: flutterwaveEncKey,
+        const response = await paystack.initializeTransaction({
+            reference: `ORDER_${order.id}`,
+            amount: totalAmount,
+            email: email,
+            callback_url: `${process.env.FRONTEND_STORE_URL}/cart?success=1`,
+            metadata: {
+                order_id: order.id,
+            }
         });
-        
-        if (response.status === 'success') {
-            return NextResponse.json({ url: response.data.link }, {
-                headers: corsHeaders,
-            });
-        } else {
-            throw new Error('Flutterwave charge creation failed');
+
+        if (response.body.status === false) {
+            throw new Error(response.body.message);
         }
+
+        return NextResponse.json({ url: response.body.data.authorization_url }, {
+            headers: corsHeaders,
+        });
     } catch (error) {
-        console.error('Flutterwave error:', error);
-        return new NextResponse(`Error creating payment: ${error instanceof Error ? error.message : 'Unknown error'}`, { status: 500 });
+        console.error('Paystack error:', error);
+        return new NextResponse("Error initializing payment", { status: 500 });
     }
 }

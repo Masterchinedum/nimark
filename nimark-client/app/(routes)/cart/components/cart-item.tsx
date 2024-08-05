@@ -1,3 +1,5 @@
+//nimark-client/app/(routes)/cart/components/cart-item.tsx
+
 "use client"
 import Currency from '@/components/ui/currency';
 import IconButton from '@/components/ui/icon-button';

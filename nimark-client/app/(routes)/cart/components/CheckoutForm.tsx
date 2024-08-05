@@ -1,61 +1,40 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useFlutterwave, closePaymentModal } from 'flutterwave-react-v3';
 import Button from '@/components/ui/button';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 interface CheckoutFormProps {
-  totalPrice: number;
+  productIds: string[];
   onSuccess: () => void;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ totalPrice, onSuccess }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ productIds, onSuccess }) => {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const config = {
-    public_key: process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY!,
-    tx_ref: Date.now().toString(),
-    amount: totalPrice,
-    currency: 'NGN',
-    payment_options: 'card,mobilemoney,ussd',
-    customer: {
-      email,
-      phone_number: phoneNumber,
-      name,
-    },
-    customizations: {
-      title: 'My store',
-      description: 'Payment for items in cart',
-      logo: 'https://st2.depositphotos.com/4403291/7418/v/450/depositphotos_74189661-stock-illustration-online-shop-log.jpg',
-    },
-  };
-
-  const handleFlutterPayment = useFlutterwave(config);
-
-  const onCheckout = () => {
+  const onCheckout = async () => {
     if (!email || !phoneNumber || !name) {
       toast.error("Please fill in all customer details.");
       return;
     }
 
-    handleFlutterPayment({
-      callback: (response) => {
-        console.log(response);
-        if (response.status === "successful") {
-          toast.success("Payment completed.");
-          onSuccess();
-        } else {
-          toast.error("Payment failed.");
-        }
-        closePaymentModal() // this will close the modal programmatically
-      },
-      onClose: () => {
-        toast.error("Payment cancelled.");
-      },
-    });
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
+        productIds,
+        customerInfo: { email, phoneNumber, name }
+      });
+
+      window.location.href = response.data.url;
+    } catch (error) {
+      toast.error('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -84,8 +63,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ totalPrice, onSuccess }) =>
           className='w-full px-3 py-2 border border-gray-300 rounded-md'
         />
       </div>
-      <Button className='w-full mt-6' onClick={onCheckout}>
-        Checkout
+      <Button disabled={isLoading} className='w-full mt-6' onClick={onCheckout}>
+        {isLoading ? 'Processing...' : 'Checkout'}
       </Button>
     </div>
   );
