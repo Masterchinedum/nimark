@@ -247,29 +247,30 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                             />
                             None
                           </CommandItem>
-                          {categories
-                            .filter(
-                              (category) => category.id !== initialData?.id
-                            )
-                            .map((category) => (
-                              <CommandItem
-                                value={category.name}
-                                key={category.id}
-                                onSelect={() => {
-                                  form.setValue("parentId", category.id);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    category.id === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {category.name}
-                              </CommandItem>
-                            ))}
+                          {Array.isArray(categories) &&
+                            categories
+                              .filter(
+                                (category) => category.id !== initialData?.id
+                              )
+                              .map((category) => (
+                                <CommandItem
+                                  value={category.name}
+                                  key={category.id}
+                                  onSelect={() => {
+                                    form.setValue("parentId", category.id);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      category.id === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {category.name}
+                                </CommandItem>
+                              ))}
                         </CommandGroup>
                       </Command>
                     </PopoverContent>
