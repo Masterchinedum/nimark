@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/orders/page.tsx
+
 import { format } from 'date-fns'
 import prismadb from '@/lib/prismadb'
 import { OrderClient } from './components/client'

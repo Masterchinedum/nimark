@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/orders/components/client.tsx
+
 "use client"
 
 import { Heading } from "@/components/ui/heading"
