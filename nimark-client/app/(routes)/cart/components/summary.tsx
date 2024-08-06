@@ -24,16 +24,20 @@ const Summary = () => {
             axios.get(`${process.env.NEXT_PUBLIC_API_URL}/checkout`, {
                 params: { reference },
             })
-            .then(() => {
-                toast.success("Payment completed.");
-                removeAll();
+            .then((response) => {
+                if (response.data.status === 'success') {
+                    toast.success("Payment completed.");
+                    removeAll();
+                } else {
+                    toast.error("Payment verification failed.");
+                }
             })
             .catch(() => {
                 toast.error("Error verifying payment.");
             });
         }
         if (searchParams.get("cancelled")) {
-            toast.error("Something went wrong.");
+            toast.error("Payment was cancelled.");
         }
     }, [searchParams, removeAll]);
 

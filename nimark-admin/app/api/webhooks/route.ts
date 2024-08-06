@@ -1,8 +1,14 @@
-// nimark-admin/app/api/webhooks/route.ts
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
-import paystack from "@/lib/paystack";
+import crypto from 'crypto';
 import prismadb from "@/lib/prismadb";
+
+const secret = process.env.PAYSTACK_SECRET_KEY!;
+
+function verifyWebhook(requestBody: string, signature: string): boolean {
+    const hash = crypto.createHmac('sha512', secret).update(requestBody).digest('hex');
+    return hash === signature;
+}
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -10,7 +16,7 @@ export async function POST(req: Request) {
 
     try {
         // Verify the webhook signature
-        const isValid = paystack.verifyWebhook(body, signature);
+        const isValid = verifyWebhook(body, signature);
 
         if (!isValid) {
             return new NextResponse(`Invalid Paystack signature`, { status: 400 });
@@ -29,14 +35,13 @@ export async function POST(req: Request) {
                 },
                 data: {
                     isPaid: true,
-                    // You might want to store additional payment details here
                 },
                 include: {
                     orderItems: true,
                 }
             });
 
-            // Update product inventory or perform any other necessary actions
+            // Archive products
             const productIds = order.orderItems.map(orderItem => orderItem.productId);
             await prismadb.product.updateMany({
                 where: {
@@ -48,6 +53,8 @@ export async function POST(req: Request) {
                     isArchived: true,
                 }
             });
+
+            console.log(`Order ${orderId} has been marked as paid and products have been archived.`);
         }
 
         return new NextResponse(null, { status: 200 });
