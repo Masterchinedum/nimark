@@ -1,3 +1,5 @@
+//nimark-admin/app/api/[storeId]/categories/routes.tsx
+
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prismadb from "@/lib/prismadb";

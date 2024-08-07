@@ -36,23 +36,24 @@ model Billboard {
 }
 
 model Category {
-  id          String     @id @default(uuid())
-  storeId     String
-  store       Store      @relation("StoreToCategory", fields: [storeId], references: [id])
-  billboardId String?
-  billboard   Billboard? @relation(fields: [billboardId], references: [id])
-  name        String
-  parentId    String?
-  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children    Category[] @relation("SubCategories")
-  products    Product[]  @relation("CategoryToProduct")
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id String @id @default(uuid())
+  storeId String // Foreign Key to Store
+  store Store @relation("StoreToCategory", fields: [storeId], references: [id])
+  billboardId String // Foreign Key to Billboard
+  billboard Billboard @relation(fields: [billboardId], references: [id])
+  name String
+  parentId String? // Optional Foreign Key for parent category
+  parent Category? @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children Category[] @relation("CategoryHierarchy")
+  products Product[] @relation("CategoryToProduct")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([storeId])
   @@index([billboardId])
-  @@index([parentId])
+  @@index([parentId]) // Index for quick parent-child lookups
 }
+
 
 model Product {
   id         String      @id @default(uuid())

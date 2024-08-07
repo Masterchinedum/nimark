@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/storeId/categories/[categoryId]/components/category-form.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -6,7 +8,7 @@ import { Billboard, Category } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Trash, Check, ChevronDown } from "lucide-react";
+import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -29,38 +31,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 
-interface CategoryFormProps {
+interface SettingsFromProps {
   initialData: Category | null;
   billboards: Billboard[];
-  categories: Category[];
 }
 
 const formSchema = z.object({
   name: z.string().min(1),
-  billboardId: z.string().optional().nullable(),
-  parentId: z.string().optional().nullable(),
+  billboardId: z.string().min(1),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
 
-export const CategoryForm: React.FC<CategoryFormProps> = ({
+export const CategoryForm: React.FC<SettingsFromProps> = ({
   initialData,
   billboards,
-  categories,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -78,7 +64,6 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
     defaultValues: initialData || {
       name: "",
       billboardId: "",
-      parentId: "",
     },
   });
 
@@ -172,23 +157,22 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
               name="billboardId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Billboard (Optional)</FormLabel>
+                  <FormLabel>Billboard</FormLabel>
                   <Select
                     disabled={loading}
                     onValueChange={field.onChange}
-                    value={field.value || ""}
-                    defaultValue={field.value || ""}
+                    value={field.value}
+                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue
-                          defaultValue={field.value || ""}
+                          defaultValue={field.value}
                           placeholder="Select a billboard"
                         />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="">None</SelectItem>
                       {billboards.map((billboard) => (
                         <SelectItem key={billboard.id} value={billboard.id}>
                           {billboard.label}
@@ -200,91 +184,13 @@ export const CategoryForm: React.FC<CategoryFormProps> = ({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="parentId"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Parent Category (Optional)</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? categories.find(
-                                (category) => category.id === field.value
-                              )?.name
-                            : "Select parent category"}
-                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search category..." />
-                        <CommandEmpty>No category found.</CommandEmpty>
-                        <CommandGroup>
-                          <CommandItem
-                            value="none"
-                            onSelect={() => {
-                              form.setValue("parentId", null);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                field.value === null
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            None
-                          </CommandItem>
-                          {Array.isArray(categories) &&
-                            categories
-                              .filter(
-                                (category) => category.id !== initialData?.id
-                              )
-                              .map((category) => (
-                                <CommandItem
-                                  value={category.name}
-                                  key={category.id}
-                                  onSelect={() => {
-                                    form.setValue("parentId", category.id);
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      category.id === field.value
-                                        ? "opacity-100"
-                                        : "opacity-0"
-                                    )}
-                                  />
-                                  {category.name}
-                                </CommandItem>
-                              ))}
-                        </CommandGroup>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
           <Button disabled={loading} className="ml-auto" type="submit">
             {action}
           </Button>
         </form>
       </Form>
+      {/* <Separator /> */}
     </>
   );
 };
