@@ -20,7 +20,8 @@ export async function POST(
             sizeId,
             images,
             isFeatured,
-            isArchived
+            isArchived,
+            stock  // New field
         } = body; 
 
         if (!userId) {
@@ -31,17 +32,25 @@ export async function POST(
             return new NextResponse("Name is required", { status: 400});
         }
 
-        if (!price) new NextResponse("Price is required", { status: 400});
+        if (!price) {
+            return new NextResponse("Price is required", { status: 400});
+        }
 
-        if (!categoryId) new NextResponse("Category id is required", { status: 400});
+        if (!categoryId) {
+            return new NextResponse("Category id is required", { status: 400});
+        }
 
-        if (!colorId) new NextResponse("Color id is required", { status: 400});
+        if (!colorId) {
+            return new NextResponse("Color id is required", { status: 400});
+        }
 
-        if (!sizeId) new NextResponse("Size id is required", { status: 400});
+        if (!sizeId) {
+            return new NextResponse("Size id is required", { status: 400});
+        }
 
-        // if (!isFeatured) new NextResponse("Featured is required", { status: 400});
-
-        // if (!isArchived) new NextResponse("Archived is required", { status: 400});
+        if (stock === undefined) {
+            return new NextResponse("Stock is required", { status: 400});
+        }
 
         if (!images || !images.length) {
             return new NextResponse("Image is required", { status: 400});
@@ -56,7 +65,7 @@ export async function POST(
                 id: params.storeId,
                 userId
             }
-        })
+        });
 
         if (!storeByUserId) {
             return new NextResponse("Unauthorized", { status: 403 });
@@ -71,6 +80,7 @@ export async function POST(
                 categoryId,
                 sizeId,
                 colorId,
+                stock,  // New field
                 storeId: params.storeId,
                 images: {
                     createMany: {
@@ -80,13 +90,13 @@ export async function POST(
                     }
                 }
             }
-        })
+        });
 
         return NextResponse.json(product);
 
     } catch (err) {
         console.log(`[PRODUCTS_POST] ${err}`);
-        return new NextResponse(`Internal error`, { status: 500})
+        return new NextResponse(`Internal error`, { status: 500});
     }
 }
 
@@ -100,6 +110,7 @@ export async function GET(
         const sizeId = searchParams.get('sizeId') || undefined;
         const colorId = searchParams.get('colorId') || undefined;
         const isFeatured = searchParams.get('isFeatured');
+        const isLowStock = searchParams.get('isLowStock'); // New query param
 
         if (!params.storeId) {
             return new NextResponse("Store Id is required", { status: 400});
@@ -112,7 +123,8 @@ export async function GET(
                 colorId,
                 sizeId,
                 isFeatured: isFeatured ? true : undefined,
-                isArchived: false
+                isArchived: false,
+                stock: isLowStock === 'true' ? { lte: 5 } : undefined // Example of low stock filter
             },
             include: {
                 images: true,
@@ -123,12 +135,12 @@ export async function GET(
             orderBy: {
                 createdAt: 'desc'
             }
-        })
+        });
 
         return NextResponse.json(products);
 
     } catch (err) {
         console.log(`[PRODUCTS_GET] ${err}`);
-        return new NextResponse(`Internal error`, { status: 500})
+        return new NextResponse(`Internal error`, { status: 500});
     }
 }
