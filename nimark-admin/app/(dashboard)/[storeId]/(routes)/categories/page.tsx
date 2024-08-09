@@ -1,3 +1,5 @@
+// nimark-admin/app/(dashboard)/[storeId]/(routes)/categories/page.tsx
+
 import { format } from 'date-fns'
 import prismadb from '@/lib/prismadb'
 import { CategoryClient } from './components/client'
@@ -16,6 +18,7 @@ const CategoriesPage = async ({
         include: {
             billboard: true,
             parent: true,
+            children: true,
         },
         orderBy: {
             createdAt: 'desc'
@@ -27,7 +30,20 @@ const CategoriesPage = async ({
         name: item.name,
         billboardLabel: item.billboard.label,
         createdAt: format(item.createdAt, "MMMM do, yyyy"),
+        parentId: item.parentId,
+        level: getLevel(item, categories),
+        childrenCount: item.children.length
     }));
+
+    function getLevel(category: any, allCategories: any[]): number {
+        let level = 0;
+        let current = category;
+        while (current.parentId) {
+            level++;
+            current = allCategories.find(c => c.id === current.parentId);
+        }
+        return level;
+    }
 
     return (
         <div className="flex-col">
