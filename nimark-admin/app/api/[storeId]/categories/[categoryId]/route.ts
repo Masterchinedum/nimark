@@ -1,4 +1,4 @@
-//nimark-admin/app/api/[storeId]/categories/[categoryId]/routes.ts
+// nimark-admin/app/api/[storeId]/categories/[categoryId]/route.ts
 
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
@@ -18,7 +18,9 @@ export async function GET (
                 id: params.categoryId,
             },
             include: {
-                billboard: true
+                billboard: true,
+                parent: true,
+                children: true
             }
         })
 
@@ -37,7 +39,7 @@ export async function PATCH (
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, billboardId } = body;
+        const { name, billboardId, parentId } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 })
@@ -48,7 +50,7 @@ export async function PATCH (
         }
 
         if (!billboardId) {
-            return new NextResponse("Billboard URL is required", { status: 400 });
+            return new NextResponse("Billboard id is required", { status: 400 });
         }
 
         if(!params.categoryId) {
@@ -66,13 +68,14 @@ export async function PATCH (
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        const category = await prismadb.category.updateMany({
+        const category = await prismadb.category.update({
             where: {
                 id: params.categoryId
             },
             data: {
                 name,
                 billboardId,
+                parentId: parentId || null
             }
         })
 
@@ -82,8 +85,6 @@ export async function PATCH (
         return new NextResponse('Internal error', { status: 500 })
     }
 }
-
-//// Delete Method
 
 export async function DELETE (
     req: Request,
@@ -111,7 +112,18 @@ export async function DELETE (
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        const category = await prismadb.category.deleteMany({
+        // First, update children categories to remove the parent reference
+        await prismadb.category.updateMany({
+            where: {
+                parentId: params.categoryId
+            },
+            data: {
+                parentId: null
+            }
+        })
+
+        // Then delete the category
+        const category = await prismadb.category.delete({
             where: {
                 id: params.categoryId,
             }

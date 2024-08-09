@@ -1,8 +1,8 @@
-//nimark-admin/app/(dashboard)/storeId/categories/[categoryId]/components/category-form.tsx
+// nimark-admin/app/(dashboard)/[storeId]/(routes)/categories/[categoryId]/components/category-form.tsx
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import * as z from "zod";
 import { Billboard, Category } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
@@ -31,28 +31,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface SettingsFromProps {
+interface SettingsFormProps {
   initialData: Category | null;
   billboards: Billboard[];
+  categories: Category[];
 }
 
 const formSchema = z.object({
   name: z.string().min(1),
   billboardId: z.string().min(1),
+  parentId: z.string().optional(),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
 
-export const CategoryForm: React.FC<SettingsFromProps> = ({
+export const CategoryForm: React.FC<SettingsFormProps> = ({
   initialData,
   billboards,
+  categories,
 }) => {
   const params = useParams();
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [availableParents, setAvailableParents] = useState<Category[]>([]);
 
   const title = initialData ? "Edit category" : "Create category";
   const description = initialData ? "Edit a category" : "Add a new category";
@@ -61,11 +66,36 @@ export const CategoryForm: React.FC<SettingsFromProps> = ({
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
+    defaultValues: initialData ? {
+      name: initialData.name,
+      billboardId: initialData.billboardId,
+      parentId: initialData.parentId || undefined,
+    } : {
       name: "",
       billboardId: "",
+      parentId: undefined,
     },
   });
+
+  const isDescendant = useCallback((category: Category, targetId: string): boolean => {
+    if (category.id === targetId) return true;
+    if (category.parentId) {
+      const parent = categories.find((cat) => cat.id === category.parentId);
+      return parent ? isDescendant(parent, targetId) : false;
+    }
+    return false;
+  }, [categories]);
+
+  useEffect(() => {
+    if (initialData) {
+      const filtered = categories.filter(
+        (cat) => cat.id !== initialData.id && !isDescendant(cat, initialData.id)
+      );
+      setAvailableParents(filtered);
+    } else {
+      setAvailableParents(categories);
+    }
+  }, [categories, initialData, isDescendant]);
 
   const onSubmit = async (data: CategoryFormValues) => {
     try {
@@ -129,68 +159,101 @@ export const CategoryForm: React.FC<SettingsFromProps> = ({
         )}
       </div>
       <Separator />
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-8"
-        >
-          <div className="grid grid-cols-3 gap-8">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={loading}
-                      placeholder="Category name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="billboardId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Billboard</FormLabel>
-                  <Select
-                    disabled={loading}
-                    onValueChange={field.onChange}
-                    value={field.value}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a billboard"
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          disabled={loading}
+                          placeholder="Category name"
+                          {...field}
+                          className="w-full"
                         />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {billboards.map((billboard) => (
-                        <SelectItem key={billboard.id} value={billboard.id}>
-                          {billboard.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <Button disabled={loading} className="ml-auto" type="submit">
-            {action}
-          </Button>
-        </form>
-      </Form>
-      {/* <Separator /> */}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="billboardId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Billboard</FormLabel>
+                      <Select
+                        disabled={loading}
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue
+                              defaultValue={field.value}
+                              placeholder="Select a billboard"
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {billboards.map((billboard) => (
+                            <SelectItem key={billboard.id} value={billboard.id}>
+                              {billboard.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="parentId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Parent Category (Optional)</FormLabel>
+                      <Select
+                        disabled={loading}
+                        onValueChange={field.onChange}
+                        value={field.value || ""}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a parent category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">None</SelectItem>
+                          {availableParents.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Button disabled={loading} className="ml-auto" type="submit">
+                {action}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </>
   );
 };

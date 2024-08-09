@@ -1,4 +1,4 @@
-//nimark-admin/app/api/[storeId]/categories/routes.tsx
+// nimark-admin/app/api/[storeId]/categories/route.ts
 
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
@@ -12,7 +12,7 @@ export async function POST(
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, billboardId } = body; 
+        const { name, billboardId, parentId } = body; 
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -45,7 +45,8 @@ export async function POST(
             data : {
                 name,
                 billboardId,
-                storeId: params.storeId
+                storeId: params.storeId,
+                parentId: parentId || null
             }
         })
 
