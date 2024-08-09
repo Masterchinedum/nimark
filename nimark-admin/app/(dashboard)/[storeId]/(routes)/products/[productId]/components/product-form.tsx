@@ -7,6 +7,7 @@ import * as z from 'zod'
 import { Category, Color, Image, Product, Size } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Trash } from "lucide-react";
 import { useForm } from 'react-hook-form';
@@ -38,6 +39,7 @@ const formSchema = z.object({
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
     sizeId: z.string().min(1),
+    description: z.string().optional(),
     isFeatured: z.boolean().default(false).optional(),
     isArchived: z.boolean().default(false).optional()
     
@@ -67,14 +69,18 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         resolver: zodResolver(formSchema),
         defaultValues: initialData ? {
             ...initialData,
-            price: parseFloat(String(initialData?.price))
+            price: parseFloat(String(initialData?.price)),
+            description: initialData.description || '',  // Convert null to empty string
+            images: initialData.images.map(image => ({ url: image.url }))  // Ensure correct image format
         } : {
             name: '',
             images: [],
             price: 0,
+            stock: 0,  // Add this if it's not already included
             categoryId: '',
             colorId: '',
             sizeId: '',
+            description: '',
             isFeatured: false,
             isArchived: false,
         }
@@ -283,6 +289,23 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea 
+                                    disabled={loading} 
+                                    placeholder="Product description" 
+                                    {...field} 
+                                    />
+                                </FormControl>
+                                <FormMessage />
                                 </FormItem>
                             )}
                         />

@@ -21,7 +21,8 @@ export async function POST(
             images,
             isFeatured,
             isArchived,
-            stock  // New field
+            stock,  // New field
+            description,
         } = body; 
 
         if (!userId) {
@@ -85,6 +86,7 @@ export async function POST(
                 sizeId,
                 colorId,
                 stock,  // New field
+                description,
                 storeId: params.storeId,
                 images: {
                     createMany: {
