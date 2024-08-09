@@ -69,7 +69,7 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
     defaultValues: initialData ? {
       name: initialData.name,
       billboardId: initialData.billboardId,
-      parentId: initialData.parentId || undefined,
+      parentId: initialData.parentId || "none" || undefined,
     } : {
       name: "",
       billboardId: "",
@@ -100,10 +100,14 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
   const onSubmit = async (data: CategoryFormValues) => {
     try {
       setLoading(true);
+      const submissionData = {
+        ...data,
+        parentId: data.parentId === "none" ? null : data.parentId
+      };
       if (initialData) {
         await axios.patch(
           `/api/${params.storeId}/categories/${params.categoryId}`,
-          data
+          submissionData
         );
       } else {
         await axios.post(`/api/${params.storeId}/categories`, data);
@@ -234,8 +238,7 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {/* i choose to ignore this for now as i am too lazy to figure out how to fix it and since the code works fine for now */}
-                          <SelectItem >None</SelectItem>
+                          <SelectItem value="none">None</SelectItem>
                           {availableParents.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                               {category.name}
