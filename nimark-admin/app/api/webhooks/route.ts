@@ -1,7 +1,10 @@
+//nimark-admin/app/api/webhooks/route.ts
+
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import prismadb from "@/lib/prismadb";
+import { updateProductStock } from "@/lib/productUtils";
 
 const secret = process.env.PAYSTACK_SECRET_KEY!;
 
@@ -41,20 +44,12 @@ export async function POST(req: Request) {
                 }
             });
 
-            // Archive products
-            const productIds = order.orderItems.map(orderItem => orderItem.productId);
-            await prismadb.product.updateMany({
-                where: {
-                    id: {
-                        in: [...productIds]
-                    },
-                },
-                data: {
-                    isArchived: true,
-                }
-            });
+            // Update product stock
+            for (const orderItem of order.orderItems) {
+                await updateProductStock(orderItem.productId, orderItem.quantity);
+            }
 
-            console.log(`Order ${orderId} has been marked as paid and products have been archived.`);
+            console.log(`Order ${orderId} has been marked as paid and product stocks have been updated.`);
         }
 
         return new NextResponse(null, { status: 200 });
