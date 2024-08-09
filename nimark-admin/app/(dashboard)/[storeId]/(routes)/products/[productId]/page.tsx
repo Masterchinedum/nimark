@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/page.tsx
+
 import prismadb from "@/lib/prismadb";
 import { ProductForm } from "./components/product-form";
 
