@@ -23,6 +23,7 @@ export async function POST(
             isArchived,
             stock,  // New field
             description,
+            relatedProductIds,
         } = body; 
 
         if (!userId) {
@@ -76,6 +77,7 @@ export async function POST(
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
+        
         const product = await prismadb.product.create({
             data : {
                 name,
@@ -94,6 +96,9 @@ export async function POST(
                             ...images.map((image: { url:string }) => image)
                         ]
                     }
+                },
+                relatedTo: {
+                    connect: relatedProductIds.map((id: string) => ({ id }))
                 }
             }
         });
@@ -136,7 +141,8 @@ export async function GET(
                 images: true,
                 category: true,
                 color: true,
-                size: true
+                size: true,
+                relatedTo: true,  // Include related products
             },
             orderBy: {
                 createdAt: 'desc'

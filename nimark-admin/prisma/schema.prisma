@@ -67,6 +67,8 @@ model Product {
   stock      Int         @default(0)
   isFeatured Boolean     @default(false)
   isArchived Boolean     @default(false)
+  relatedTo      Product[] @relation("RelatedProducts")
+  relatedFrom    Product[] @relation("RelatedProducts")
   sizeId     String // Foreign Key to Size
   size       Size        @relation(fields: [sizeId], references: [id])
   colorId    String // Foreign Key to Color

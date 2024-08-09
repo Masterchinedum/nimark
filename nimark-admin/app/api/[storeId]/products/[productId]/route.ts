@@ -54,6 +54,7 @@ export async function PATCH (
             stock,
             stockChange,  // New field
             description,
+            relatedProductIds,
         } = body;
 
         if (!userId) {
@@ -135,7 +136,10 @@ export async function PATCH (
                 images: {
                     deleteMany: {}
                 },
-                storeId: params.storeId
+                relatedTo: {
+                    set: relatedProductIds?.map((id: string) => ({ id })) || []
+                },
+                storeId: params.storeId,
             }
         });
 
