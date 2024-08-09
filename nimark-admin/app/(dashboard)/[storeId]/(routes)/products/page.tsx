@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/page.tsx
+
 import { format } from 'date-fns'
 import prismadb from '@/lib/prismadb'
 import { ProductClient } from './components/client'
@@ -32,6 +34,7 @@ const ProductsPage = async ({
         price: formatter.format(Number(item.price)),
         category: item.category.name,
         size: item.size.name,
+        stock: item.stock,
         color: item.color.value,
         createdAt: format(item.createdAt, "MMMM do, yyyy"),
     }));

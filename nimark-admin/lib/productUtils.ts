@@ -1,3 +1,5 @@
+// nimark-admin/lib/productUtils.ts
+
 import prismadb from "./prismadb";
 
 export async function updateProductStock(productId: string, quantitySold: number) {
@@ -6,7 +8,7 @@ export async function updateProductStock(productId: string, quantitySold: number
   });
 
   if (product) {
-    const newStock = product.stock - quantitySold;
+    const newStock = Math.max(product.stock - quantitySold, 0);  // Ensure stock doesn't go negative
     await prismadb.product.update({
       where: { id: productId },
       data: {
@@ -14,5 +16,7 @@ export async function updateProductStock(productId: string, quantitySold: number
         isArchived: newStock <= 0
       }
     });
+    return newStock;
   }
+  return null;
 }

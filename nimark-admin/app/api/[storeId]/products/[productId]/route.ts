@@ -3,6 +3,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { updateProductStock } from "@/lib/productUtils";
 
 
 export async function GET (
@@ -50,7 +51,8 @@ export async function PATCH (
             images,
             isFeatured,
             isArchived,
-            stock  // New field
+            stock,
+            stockChange  // New field
         } = body;
 
         if (!userId) {
@@ -80,6 +82,9 @@ export async function PATCH (
         if (stock === undefined) {
             return new NextResponse("Stock is required", { status: 400});
         }
+        if (stock < 0) {
+            return new NextResponse("Stock cannot be negative", { status: 400 });
+          }
 
         if (!images || !images.length) {
             return new NextResponse("Image is required", { status: 400});
@@ -100,7 +105,19 @@ export async function PATCH (
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        await prismadb.product.update({
+        let updatedStock = stock;
+
+        if (stockChange !== undefined) {
+            const newStock = await updateProductStock(params.productId, stockChange);
+            if (newStock !== null) {
+                updatedStock = newStock;
+            }
+        }
+
+        const isAutoArchived = stock === 0;
+
+
+        const product = await prismadb.product.update({
             where: {
                 id: params.productId
             },
@@ -108,11 +125,11 @@ export async function PATCH (
                 name,
                 price,
                 isFeatured,
-                isArchived,
+                isArchived: isAutoArchived ? true : isArchived, // Auto-archive if stock is 0
                 categoryId,
                 sizeId,
                 colorId,
-                stock,  // New field
+                stock: updatedStock,
                 images: {
                     deleteMany: {}
                 },
@@ -120,7 +137,7 @@ export async function PATCH (
             }
         });
 
-        const product = await prismadb.product.update({
+        await prismadb.product.update({
             where: {
                 id: params.productId
             },

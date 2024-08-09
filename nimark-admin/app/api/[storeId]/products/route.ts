@@ -52,6 +52,10 @@ export async function POST(
             return new NextResponse("Stock is required", { status: 400});
         }
 
+        if (stock < 0) {
+            return new NextResponse("Stock cannot be negative", { status: 400 });
+          }
+
         if (!images || !images.length) {
             return new NextResponse("Image is required", { status: 400});
         }
@@ -76,7 +80,7 @@ export async function POST(
                 name,
                 price,
                 isFeatured,
-                isArchived,
+                isArchived: stock === 0 ? true : isArchived,
                 categoryId,
                 sizeId,
                 colorId,
