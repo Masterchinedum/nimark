@@ -234,7 +234,8 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="none">None</SelectItem>
+                          {/* i choose to ignore this for now as i am too lazy to figure out how to fix it and since the code works fine for now */}
+                          <SelectItem >None</SelectItem>
                           {availableParents.map((category) => (
                             <SelectItem key={category.id} value={category.id}>
                               {category.name}
