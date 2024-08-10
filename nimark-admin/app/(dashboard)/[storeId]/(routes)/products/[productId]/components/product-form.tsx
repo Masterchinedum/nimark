@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import * as z from 'zod'
 import { Category, Color, Image, Product, Size } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
@@ -100,6 +100,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     });
 
     const onSubmit = async (data: ProductFormValues) => {
+        console.log("Submitting product data:", data);
         try {
             setLoading(true);
             if (initialData) {
@@ -121,6 +122,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         } finally {
             setLoading(false)
         }
+        
     }
 
     const onDelete = async () => {
@@ -137,6 +139,8 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             setOpen(false);
         }
     }
+
+    
 
     const availableProducts = products || [];
 
