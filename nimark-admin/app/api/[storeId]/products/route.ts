@@ -21,9 +21,7 @@ export async function POST(
             images,
             isFeatured,
             isArchived,
-            stock, 
-            description,
-            relatedProductIds,
+            stock  // New field
         } = body; 
 
         if (!userId) {
@@ -88,7 +86,6 @@ export async function POST(
                 sizeId,
                 colorId,
                 stock,  // New field
-                description,
                 storeId: params.storeId,
                 images: {
                     createMany: {
@@ -96,9 +93,6 @@ export async function POST(
                             ...images.map((image: { url:string }) => image)
                         ]
                     }
-                },
-                relatedTo: {
-                    connect: relatedProductIds.map((id: string) => ({ id }))
                 }
             }
         });

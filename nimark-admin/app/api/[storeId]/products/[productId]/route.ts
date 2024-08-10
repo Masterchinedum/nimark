@@ -52,9 +52,7 @@ export async function PATCH (
             isFeatured,
             isArchived,
             stock,
-            stockChange, 
-            description,
-            relatedProductIds,
+            stockChange  // New field
         } = body;
 
         if (!userId) {
@@ -132,7 +130,6 @@ export async function PATCH (
                 sizeId,
                 colorId,
                 stock: updatedStock,
-                description,
                 images: {
                     deleteMany: {}
                 },

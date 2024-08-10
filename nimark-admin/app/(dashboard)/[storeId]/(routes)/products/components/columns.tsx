@@ -10,7 +10,6 @@ export type ProductColumn = {
     size: string
     category: string
     color: string
-    // description: string | null
     isFeatured: boolean
     isArchived: boolean
     createdAt: string
@@ -83,13 +82,6 @@ export const columns: ColumnDef<ProductColumn>[] = [
             </div>
         )
     },
-    // {
-    //     accessorKey: 'description',
-    //     header: 'Description',
-    //     cell: ({ row }) => (
-    //       <div className="max-w-[200px] truncate">{row.original.description}</div>
-    //     )
-    //   },
     {
         accessorKey: 'createdAt',
         header: 'Date',
