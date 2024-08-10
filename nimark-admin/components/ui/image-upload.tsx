@@ -1,3 +1,5 @@
+//nimark-admin/components/ui/image-upload.tsx
+
 "use client"
 
 import { useEffect, useState } from 'react';
@@ -8,7 +10,7 @@ import { CldUploadWidget } from 'next-cloudinary';
 
 interface ImageUploadProps {
     disabled?: boolean;
-    onChange: (value: string) => void;
+    onChange: (value: string[]) => void;
     onRemove: (value: string) => void;
     value: string[];
 }
@@ -27,7 +29,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }, [])
     
     const onUpload = (result: any) => {
-        onChange(result.info.secure_url);
+        onChange([...value, result.info.secure_url]);
     }
 
     if (!isMounted) {

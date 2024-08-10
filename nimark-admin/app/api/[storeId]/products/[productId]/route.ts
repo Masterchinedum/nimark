@@ -52,7 +52,7 @@ export async function PATCH (
             isFeatured,
             isArchived,
             stock,
-            stockChange,  // New field
+            stockChange, 
             description,
             relatedProductIds,
         } = body;

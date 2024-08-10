@@ -15,18 +15,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Product } from "@prisma/client";
 
 interface RelatedProductSelectProps {
-  products: { id: string; name: string }[];
+  products: Product[];
   selectedProductIds: string[];
   onChange: (value: string[]) => void;
 }
 
-export function RelatedProductSelect({
+export const RelatedProductSelect: React.FC<RelatedProductSelectProps> = ({
   products,
   selectedProductIds,
-  onChange,
-}: RelatedProductSelectProps) {
+  onChange
+}) => {
   const [open, setOpen] = useState(false);
 
   return (

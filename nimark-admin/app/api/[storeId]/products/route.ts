@@ -21,7 +21,7 @@ export async function POST(
             images,
             isFeatured,
             isArchived,
-            stock,  // New field
+            stock, 
             description,
             relatedProductIds,
         } = body; 
