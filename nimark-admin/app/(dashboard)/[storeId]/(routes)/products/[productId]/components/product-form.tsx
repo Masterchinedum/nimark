@@ -18,7 +18,7 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import { AlertModal } from '@/components/modals/alert-modal';
-import ImageUpload from '@/components/ui/image-upload';
+import ImageUpload from '@/components/ui/productImages';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
