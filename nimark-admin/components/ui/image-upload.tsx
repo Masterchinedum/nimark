@@ -10,7 +10,7 @@ import { CldUploadWidget } from 'next-cloudinary';
 
 interface ImageUploadProps {
     disabled?: boolean;
-    onChange: (value: string[]) => void;
+    onChange: (value: string) => void;
     onRemove: (value: string) => void;
     value: string[];
 }
@@ -29,9 +29,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }, [])
     
     const onUpload = (result: any) => {
-        console.log("Upload result:", result);
-        console.log("New image URL:", result.info.secure_url);
-        onChange([...value, result.info.secure_url]);
+        onChange(result.info.secure_url);
     }
 
     if (!isMounted) {
@@ -61,7 +59,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
                 ))}
             </div>
             <CldUploadWidget 
-            onUpload={onUpload} 
+            onSuccess={onUpload} 
             uploadPreset='sxicrgic'>
                 {({ open }) => {
                     const onClick = () => {

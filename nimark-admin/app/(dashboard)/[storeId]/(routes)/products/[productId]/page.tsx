@@ -9,8 +9,7 @@ const ProductPage = async ({ params }: { params: { productId: string, storeId: s
             id: params.productId
         },
         include: {
-            images: true,
-            relatedTo: true
+            images: true
         }
     });
 
@@ -18,31 +17,19 @@ const ProductPage = async ({ params }: { params: { productId: string, storeId: s
         where: {
             storeId: params.storeId
         },
-    });
+    })
 
     const sizes = await prismadb.size.findMany({
         where: {
             storeId: params.storeId
         },
-    });
+    })
 
     const colors = await prismadb.color.findMany({
         where: {
             storeId: params.storeId
         },
-    });
-
-    const products = await prismadb.product.findMany({
-        where: {
-            storeId: params.storeId
-        },
-        include: {
-            images: true,
-            category: true,
-            size: true,
-            color: true
-        }
-    });
+    })
 
     return (
         <div className="flex-col">
@@ -52,11 +39,10 @@ const ProductPage = async ({ params }: { params: { productId: string, storeId: s
                     colors={colors}
                     sizes={sizes}
                     categories={categories}
-                    products={products}
                 />
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default ProductPage;

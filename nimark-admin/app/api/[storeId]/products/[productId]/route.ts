@@ -52,7 +52,8 @@ export async function PATCH (
             isFeatured,
             isArchived,
             stock,
-            stockChange  // New field
+            stockChange,  // New field
+            description,
         } = body;
 
         if (!userId) {
@@ -130,13 +131,11 @@ export async function PATCH (
                 sizeId,
                 colorId,
                 stock: updatedStock,
+                description,
                 images: {
                     deleteMany: {}
                 },
-                relatedTo: {
-                    set: relatedProductIds?.map((id: string) => ({ id })) || []
-                },
-                storeId: params.storeId,
+                storeId: params.storeId
             }
         });
 

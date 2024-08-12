@@ -2,11 +2,12 @@
 
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import * as z from 'zod'
 import { Category, Color, Image, Product, Size } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Trash } from "lucide-react";
 import { useForm } from 'react-hook-form';
@@ -20,22 +21,14 @@ import { AlertModal } from '@/components/modals/alert-modal';
 import ImageUpload from '@/components/ui/image-upload';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { RelatedProductSelect } from "@/components/related-product-select";
 
 interface ProductFromProps {
     initialData: Product & {
         images: Image[]
-        relatedTo: Product[]
     } | null;
     categories: Category[]
     colors: Color[]
     sizes: Size[]
-    products: (Product & {
-        images: Image[]
-        category: Category
-        size: Size
-        color: Color
-    })[]
 }
 
 const formSchema = z.object({
@@ -46,9 +39,9 @@ const formSchema = z.object({
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
     sizeId: z.string().min(1),
+    description: z.string().optional(),
     isFeatured: z.boolean().default(false).optional(),
-    isArchived: z.boolean().default(false).optional(),
-    relatedProductIds: z.array(z.string()).optional(),
+    isArchived: z.boolean().default(false).optional()
     
 })
 
@@ -58,8 +51,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     initialData,
     categories,
     colors,
-    sizes,
-    products,
+    sizes
 }) => {
 
     const params = useParams();
@@ -67,9 +59,6 @@ export const ProductForm: React.FC<ProductFromProps> = ({
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [relatedProductIds, setRelatedProductIds] = useState<string[]>(
-        initialData?.relatedTo.map(product => product.id) || []
-    );
 
     const title = initialData ? 'Edit product' : 'Create product'
     const description = initialData ? 'Edit a product' : 'Add a new product'
@@ -80,33 +69,30 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         resolver: zodResolver(formSchema),
         defaultValues: initialData ? {
             ...initialData,
-            price: parseFloat(String(initialData?.price))
+            price: parseFloat(String(initialData?.price)),
+            description: initialData.description || '',  // Convert null to empty string
+            images: initialData.images.map(image => ({ url: image.url }))  // Ensure correct image format
         } : {
             name: '',
             images: [],
             price: 0,
+            stock: 0,  // Add this if it's not already included
             categoryId: '',
             colorId: '',
             sizeId: '',
+            description: '',
             isFeatured: false,
             isArchived: false,
         }
     });
 
     const onSubmit = async (data: ProductFormValues) => {
-        console.log("Submitting product data:", data);
         try {
             setLoading(true);
             if (initialData) {
-                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, {
-                    ...data,
-                    relatedProductIds
-                })
+                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, data)
             } else {
-                await axios.post(`/api/${params.storeId}/products`, {
-                    ...data,
-                    relatedProductIds
-                })
+                await axios.post(`/api/${params.storeId}/products`, data)
             }
             router.refresh();
             router.push(`/${params.storeId}/products`);
@@ -116,7 +102,6 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         } finally {
             setLoading(false)
         }
-        
     }
 
     const onDelete = async () => {
@@ -133,10 +118,6 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             setOpen(false);
         }
     }
-
-    
-
-    const availableProducts = products || [];
 
     return (
         <>
@@ -157,24 +138,24 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-                <FormField
-                    control={form.control} 
-                    name="images"
-                    render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Images</FormLabel>
-                            <FormControl>
-                                <ImageUpload
-                                    value={field.value.map((image) => image.url)}
-                                    disabled={loading}
-                                    onChange={(urls) => field.onChange(urls.map(url => ({ url })))}
-                                    onRemove={(url) => field.onChange([...field.value.filter((image) => image.url !== url)])}
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    <FormField
+                        control={form.control} 
+                        name="images"
+                        render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Images</FormLabel>
+                                <FormControl>
+                                    <ImageUpload
+                                        value={field.value.map((image) => image.url)}
+                                        disabled={loading}
+                                        onChange={(url) => field.onChange([...field.value, { url }])}
+                                        onRemove={(url) => field.onChange([...field.value.filter((image) => image.url !== url)])}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <div className='grid grid-cols-3 gap-8'>
                         <FormField
                             control={form.control} 
@@ -312,6 +293,23 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                             )}
                         />
                         <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea 
+                                    disabled={loading} 
+                                    placeholder="Product description" 
+                                    {...field} 
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
                             control={form.control} 
                             name="isFeatured"
                             render={({field}) => (
@@ -354,27 +352,6 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                                             The product will not appear anywhere in the store.
                                         </FormDescription>
                                     </div>
-                                </FormItem>
-                            )}
-                        />
-                        
-                        <FormField
-                            control={form.control}
-                            name="relatedProductIds"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Related Products</FormLabel>
-                                    <FormControl>
-                                    <RelatedProductSelect
-                                        products={availableProducts.filter((p: Product) => p.id !== initialData?.id)}
-                                        selectedProductIds={relatedProductIds}
-                                        onChange={(ids) => {
-                                            setRelatedProductIds(ids);
-                                            field.onChange(ids);
-                                        }}
-                                    />
-                                    </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}
                         />

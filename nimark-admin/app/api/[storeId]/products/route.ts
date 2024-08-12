@@ -21,7 +21,8 @@ export async function POST(
             images,
             isFeatured,
             isArchived,
-            stock  // New field
+            stock,  // New field
+            description,
         } = body; 
 
         if (!userId) {
@@ -75,7 +76,6 @@ export async function POST(
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        
         const product = await prismadb.product.create({
             data : {
                 name,
@@ -86,6 +86,7 @@ export async function POST(
                 sizeId,
                 colorId,
                 stock,  // New field
+                description,
                 storeId: params.storeId,
                 images: {
                     createMany: {
@@ -135,8 +136,7 @@ export async function GET(
                 images: true,
                 category: true,
                 color: true,
-                size: true,
-                relatedTo: true,  // Include related products
+                size: true
             },
             orderBy: {
                 createdAt: 'desc'
