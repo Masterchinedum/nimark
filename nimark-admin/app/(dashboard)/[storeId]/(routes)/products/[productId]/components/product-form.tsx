@@ -53,7 +53,6 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     colors,
     sizes
 }) => {
-
     const params = useParams();
     const router = useRouter();
 
@@ -72,12 +71,12 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             price: parseFloat(String(initialData?.price)),
             stock: initialData?.stock || 0,
             description: initialData.description || '',
-            images: initialData.images.map(image => image.url)  // Change this line
+            images: initialData.images.map(image => image.url)
         } : {
             name: '',
             images: [],
             price: 0,
-            stock: 0,  // Add this if it's not already included
+            stock: 0,
             categoryId: '',
             colorId: '',
             sizeId: '',
@@ -86,6 +85,11 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             isArchived: false,
         }
     });
+
+    const initialDataWithImages = {
+        ...initialData,
+        images: initialData?.images.map((image) => image.url),
+    };
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
@@ -119,7 +123,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             setOpen(false);
         }
     }
-
+    
     return (
         <>
             <AlertModal

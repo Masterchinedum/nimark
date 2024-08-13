@@ -28,13 +28,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
     }, []);
 
     const onUpload = (result: any) => {
-        const newUrl = result.info.secure_url;
-        if (value.length < maxImages) {
-            onChange([...value, newUrl]);
-        } else {
-            alert(`You can only upload a maximum of ${maxImages} images.`);
-        }
-    };
+    const newUrl = result.info.secure_url;
+    onChange([...value, newUrl]); // Append new URL to existing array
+};
 
     if (!isMounted) {
         return null;
