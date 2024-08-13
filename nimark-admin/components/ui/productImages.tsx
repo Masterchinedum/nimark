@@ -1,5 +1,3 @@
-//nimark-admin/components/ui/image-upload.tsx
-
 "use client"
 
 import { useEffect, useState } from 'react';
@@ -10,72 +8,90 @@ import { CldUploadWidget } from 'next-cloudinary';
 
 interface ImageUploadProps {
     disabled?: boolean;
-    onChange: (value: string) => void;
+    onChange: (value: string[]) => void;
     onRemove: (value: string) => void;
     value: string[];
+    maxImages?: number;
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({
     disabled,
     onChange,
     onRemove,
-    value
+    value,
+    maxImages = 5
 }) => {
-
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-    }, [])
-    
+    }, []);
+
     const onUpload = (result: any) => {
-        onChange(result.info.secure_url);
-    }
+        const newUrl = result.info.secure_url;
+        if (value.length < maxImages) {
+            onChange([...value, newUrl]);
+        } else {
+            alert(`You can only upload a maximum of ${maxImages} images.`);
+        }
+    };
 
     if (!isMounted) {
         return null;
     }
 
-
     return (
         <div>
-            <div className='mb-4 flex items-center gap-4'>
+            <div className='mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
                 {value.map((url) => (
-                    <div key={url} className='relative w-[200px] h-[200px] rounded-md overflow-hidden'>
+                    <div key={url} className='relative w-full pt-[100%] rounded-md overflow-hidden'>
                         <div className='z-10 absolute top-2 right-2'>
-                            <Button     
-                                type='button' 
-                                onClick={() => onRemove(url)} 
-                                variant="destructive" 
+                            <Button
+                                type='button'
+                                onClick={() => onRemove(url)}
+                                variant="destructive"
                                 size="icon">
                                 <Trash className='w-4 h-4'/>
                             </Button>
                         </div>
-                        <Image 
-                            fill className='object-cover' 
-                            alt='Image' 
-                            src={url} />
+                        <Image
+                            fill
+                            className='object-cover'
+                            alt='Image'
+                            src={url}
+                        />
                     </div>
                 ))}
             </div>
-            <CldUploadWidget 
-            onSuccess={onUpload} 
-            uploadPreset='sxicrgic'>
-                {({ open }) => {
-                    const onClick = () => {
-                        open();
-                    }
+            {value.length < maxImages && (
+                <CldUploadWidget 
+                    onSuccess={onUpload}
+                    uploadPreset='sxicrgic'
+                    options={{
+                        maxFiles: maxImages - value.length
+                    }}
+                >
+                    {({ open }) => {
+                        const onClick = () => {
+                            open();
+                        }
 
-                    return (
-                        <Button type='button' disabled={disabled} variant={'secondary'} onClick={onClick}>
-                            <ImagePlus className='h-4 w-4 mr-2' />
-                            Upload an Image
-                        </Button>
-                    )
-                }}
-            </CldUploadWidget>
+                        return (
+                            <Button 
+                                type='button' 
+                                disabled={disabled} 
+                                variant='secondary' 
+                                onClick={onClick}
+                            >
+                                <ImagePlus className='h-4 w-4 mr-2' />
+                                Upload Images ({value.length}/{maxImages})
+                            </Button>
+                        )
+                    }}
+                </CldUploadWidget>
+            )}
         </div>
-    )
-};
+    );
+}
 
-export default ImageUpload
+export default ImageUpload;

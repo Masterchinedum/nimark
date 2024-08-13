@@ -33,7 +33,7 @@ interface ProductFromProps {
 
 const formSchema = z.object({
     name: z.string().min(1),
-    images: z.object({ url: z.string() }).array(),
+    images: z.array(z.string()),
     price: z.coerce.number().min(1),
     stock: z.coerce.number().min(0),
     categoryId: z.string().min(1),
@@ -70,8 +70,9 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         defaultValues: initialData ? {
             ...initialData,
             price: parseFloat(String(initialData?.price)),
-            description: initialData.description || '',  // Convert null to empty string
-            images: initialData.images.map(image => ({ url: image.url }))  // Ensure correct image format
+            stock: initialData?.stock || 0,
+            description: initialData.description || '',
+            images: initialData.images.map(image => image.url)  // Change this line
         } : {
             name: '',
             images: [],
@@ -145,12 +146,13 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                             <FormItem>
                                 <FormLabel>Images</FormLabel>
                                 <FormControl>
-                                    <ImageUpload
-                                        value={field.value.map((image) => image.url)}
-                                        disabled={loading}
-                                        onChange={(url) => field.onChange([...field.value, { url }])}
-                                        onRemove={(url) => field.onChange([...field.value.filter((image) => image.url !== url)])}
-                                    />
+                                <ImageUpload
+                                    value={field.value}
+                                    disabled={loading}
+                                    onChange={(urls) => field.onChange(urls)}
+                                    onRemove={(url) => field.onChange(field.value.filter((current) => current !== url))}
+                                    maxImages={5}
+                                />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
