@@ -1,10 +1,10 @@
-//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/product-form.tsx
-
 "use client"
 
-import { useState } from 'react'
-import * as z from 'zod'
-import { Category, Color, Image, Product, Size } from "@prisma/client";
+import { useState } from 'react';
+import { CldUploadWidget } from 'next-cloudinary';
+import { CldImage } from 'next-cloudinary';
+import * as z from 'zod';
+import { Category, Color, Size, Product as PrismaProduct, Prisma } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,34 +18,67 @@ import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useParams, useRouter } from 'next/navigation';
 import { AlertModal } from '@/components/modals/alert-modal';
-import ImageUpload from '@/components/ui/productImages';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
 interface ProductFromProps {
-    initialData: Product & {
+    initialData: PrismaProduct & {
         images: Image[]
-    } | null;
-    categories: Category[]
-    colors: Color[]
-    sizes: Size[]
+      } | null;
+    categories: Category[];
+    colors: Color[];
+    sizes: Size[];
 }
+
+
+// interface Product {
+//     id: string;
+//     storeId: string;
+//     categoryId: string;
+//     name: string;
+//     description: string | null;
+//     price: Decimal;
+//     stock: number;
+//     isFeatured: boolean;
+//     isArchived: boolean;
+//     sizeId: string;
+//     colorId: string;
+//     createdAt: Date;
+//     updatedAt: Date;
+//     images: Image[]; // Add this line
+//   }
+
+  interface Image {
+    id: string;
+    productId: string;
+    url: string;
+  }
+
+  type ProductWithPrice = PrismaProduct & {
+    price: Prisma.Decimal;
+}
+
 
 const formSchema = z.object({
     name: z.string().min(1),
-    images: z.array(z.string()),
     price: z.coerce.number().min(1),
     stock: z.coerce.number().min(0),
+    images: z.array(z.object({ url: z.string() })),
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
     sizeId: z.string().min(1),
     description: z.string().optional(),
     isFeatured: z.boolean().default(false).optional(),
     isArchived: z.boolean().default(false).optional()
-    
-})
+});
 
-type ProductFormValues = z.infer<typeof formSchema>;
+type UploadedImage = {
+    url: string;
+  };
+
+  type ProductFormValues = z.infer<typeof formSchema> & {
+    images: UploadedImage[];
+  };
 
 export const ProductForm: React.FC<ProductFromProps> = ({
     initialData,
@@ -63,6 +96,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     const description = initialData ? 'Edit a product' : 'Add a new product'
     const toastMessage = initialData ? 'Product updated.' : 'Product created.'
     const action = initialData ? 'Save changes' : 'Create'
+    const [images, setImages] = useState<UploadedImage[]>(initialData?.images || []);
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(formSchema),
@@ -71,11 +105,11 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             price: parseFloat(String(initialData?.price)),
             stock: initialData?.stock || 0,
             description: initialData.description || '',
-            images: initialData.images.map(image => image.url)
+            images: initialData.images || [],
         } : {
             name: '',
-            images: [],
             price: 0,
+            images: [],
             stock: 0,
             categoryId: '',
             colorId: '',
@@ -86,18 +120,13 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         }
     });
 
-    const initialDataWithImages = {
-        ...initialData,
-        images: initialData?.images.map((image) => image.url),
-    };
-
     const onSubmit = async (data: ProductFormValues) => {
         try {
             setLoading(true);
             if (initialData) {
-                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, data)
+                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, {...data, images});
             } else {
-                await axios.post(`/api/${params.storeId}/products`, data)
+                await axios.post(`/api/${params.storeId}/products`, {...data, images});
             }
             router.refresh();
             router.push(`/${params.storeId}/products`);
@@ -108,6 +137,12 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             setLoading(false)
         }
     }
+
+    const onUpload = (result: any) => {
+        const newImage = { url: result.info.secure_url };
+        setImages((prev) => [...prev, newImage]);
+        form.setValue('images', [...images, newImage]);
+      };
 
     const onDelete = async () => {
         try {
@@ -140,28 +175,44 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                     </Button>
                 )}
             </div>
+            <div>
+                <h2>Product Images</h2>
+                <div className="grid grid-cols-3 gap-4">
+                {images.map((image, index) => (
+                    <div key={index} className="relative">
+                    <CldImage
+                        width="200"
+                        height="200"
+                        src={image.url}
+                        alt={`Product image ${index + 1}`}
+                    />
+                    <button
+                        className="absolute top-0 right-0 bg-red-500 text-white p-1"
+                        onClick={() => {
+                        const newImages = images.filter((_, i) => i !== index);
+                        setImages(newImages);
+                        form.setValue('images', newImages);
+                        }}
+                    >
+                        Remove
+                    </button>
+                    </div>
+                ))}
+                </div>
+                <CldUploadWidget
+                uploadPreset="xgwvqsdi"
+                onSuccess={onUpload}
+                >
+                {({ open }) => (
+                    <button className="btn btn-primary" onClick={() => open()}>
+                    Upload Image
+                    </button>
+                )}
+                </CldUploadWidget>
+            </div>
             <Separator />
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-                    <FormField
-                        control={form.control} 
-                        name="images"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Images</FormLabel>
-                                <FormControl>
-                                <ImageUpload
-                                    value={field.value}
-                                    disabled={loading}
-                                    onChange={(urls) => field.onChange(urls)}
-                                    onRemove={(url) => field.onChange(field.value.filter((current) => current !== url))}
-                                    maxImages={5}
-                                />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
                     <div className='grid grid-cols-3 gap-8'>
                         <FormField
                             control={form.control} 
@@ -355,17 +406,18 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                                             Archived
                                         </FormLabel>
                                         <FormDescription>
-                                            The product will not appear anywhere in the store.
+                                            The product will not be visible to customers.
                                         </FormDescription>
                                     </div>
                                 </FormItem>
                             )}
                         />
                     </div>
-                    <Button disabled={loading} className='ml-auto' type='submit'>{action}</Button>
+                    <Button type="submit" disabled={loading}>
+                        {action}
+                    </Button>
                 </form>
             </Form>
-            {/* <Separator /> */}
         </>
     )
 }
