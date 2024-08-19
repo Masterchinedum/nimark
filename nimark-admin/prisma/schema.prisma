@@ -17,6 +17,7 @@ model Store {
   products   Product[]   @relation("StoreToProduct")
   sizes      Size[]      @relation("StoreToSize")
   colors     Color[]     @relation("StoreToColor")
+  brands     Brand[]     @relation("StoreToBrand")
   orders     Order[]     @relation("StoreToOrder")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -73,6 +74,8 @@ model Product {
   size       Size        @relation(fields: [sizeId], references: [id])
   colorId    String // Foreign Key to Color
   color      Color       @relation(fields: [colorId], references: [id])
+  brandId    String
+  brand      Brand       @relation(fields: [brandId], references: [id])
   images     Image[] // Relation to Image model
   orderItems OrderItem[] // Relation to Order model
   createdAt  DateTime    @default(now())
@@ -82,6 +85,7 @@ model Product {
   @@index([categoryId])
   @@index([sizeId])
   @@index([colorId])
+  @@index([brandId])
 }
 
 model Order {
@@ -117,6 +121,19 @@ model Size {
   store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name      String
   value     String
+  products  Product[] // Relation to Product model
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([storeId])
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  storeId   String // Foreign Key to Store
+  store     Store     @relation("StoreToBrand", fields: [storeId], references: [id])
+  name      String
+  imageUrl   String
   products  Product[] // Relation to Product model
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
