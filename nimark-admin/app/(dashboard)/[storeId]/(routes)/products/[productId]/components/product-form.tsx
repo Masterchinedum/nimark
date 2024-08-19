@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/components/product-form.tsx
+
 "use client"
 
 import { useState } from 'react';
