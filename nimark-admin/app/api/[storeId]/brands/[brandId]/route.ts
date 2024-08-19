@@ -4,35 +4,35 @@ import { NextResponse } from "next/server"
 
 export async function GET (
     req: Request,
-    { params }: { params: { colorId: string }}
+    { params }: { params: { brandId: string }}
 ) {
     try {
-        if(!params.colorId) {
-            return new NextResponse("Color id is required", { status: 400 });
+        if(!params.brandId) {
+            return new NextResponse("brand id is required", { status: 400 });
         }
 
-        const color = await prismadb.color.findUnique({
+        const brand = await prismadb.brand.findUnique({
             where: {
-                id: params.colorId,
+                id: params.brandId,
             }
         })
 
-        return NextResponse.json(color);
+        return NextResponse.json(brand);
     } catch (err) {
-        console.log('[COLOR_GET]', err)
+        console.log('[BRAND_GET]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
 }
 
 export async function PATCH (
     req: Request,
-    { params }: { params: { storeId: string, colorId: string }}
+    { params }: { params: { storeId: string, brandId: string }}
 ) {
     try {
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, value } = body;
+        const { name, imageUrl } = body;
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 })
@@ -42,12 +42,12 @@ export async function PATCH (
             return new NextResponse("Name is required", { status: 400 });
         }
 
-        if (!value) {
-            return new NextResponse("Value is required", { status: 400 });
+        if (!imageUrl) {
+            return new NextResponse("Image URL is required", { status: 400 });
         }
 
-        if(!params.colorId) {
-            return new NextResponse("Color id is required", { status: 400 });
+        if(!params.brandId) {
+            return new NextResponse("Brand id is required", { status: 400 });
         }
 
         const storeByUserId = await prismadb.store.findFirst({
@@ -61,19 +61,19 @@ export async function PATCH (
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        const color = await prismadb.color.updateMany({
+        const brand = await prismadb.brand.updateMany({
             where: {
-                id: params.colorId
+                id: params.brandId
             },
             data: {
                 name,
-                value
+                imageUrl
             }
         })
 
-        return NextResponse.json(color);
+        return NextResponse.json(brand);
     } catch (err) {
-        console.log('[COLOR_PATCH]', err)
+        console.log('[BRAND_PATCH]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
 }
@@ -82,7 +82,7 @@ export async function PATCH (
 
 export async function DELETE (
     req: Request,
-    { params }: { params: { storeId: string, colorId: string }}
+    { params }: { params: { storeId: string, brandId: string }}
 ) {
     try {
         const { userId } = auth();
@@ -91,7 +91,7 @@ export async function DELETE (
             return new NextResponse("Unauthenticated", { status: 401 })
         }
 
-        if(!params.colorId) {
+        if(!params.brandId) {
             return new NextResponse("Color id is required", { status: 400 });
         }
 
@@ -106,15 +106,15 @@ export async function DELETE (
             return new NextResponse("Unauthorized", { status: 403 });
         }
 
-        const color = await prismadb.color.deleteMany({
+        const brand = await prismadb.brand.deleteMany({
             where: {
-                id: params.colorId,
+                id: params.brandId,
             }
         })
 
-        return NextResponse.json(color);
+        return NextResponse.json(brand);
     } catch (err) {
-        console.log('[COLOR_DELETE]', err)
+        console.log('[BRAND_DELETE]', err)
         return new NextResponse('Internal error', { status: 500 })
     }
 }
