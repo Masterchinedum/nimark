@@ -20,6 +20,10 @@ export function MainNav({ className, ...props } : React.HTMLAttributes<HTMLEleme
         href: `/${params.storeId}/categories`,
         label: 'Categories',
         active: pathname === `/${params.storeId}/categories`
+    },{
+        href: `/${params.storeId}/brands`,
+        label: 'Brands',
+        active: pathname === `/${params.storeId}/brands`
     }, {
         href: `/${params.storeId}/sizes`,
         label: 'Sizes',
