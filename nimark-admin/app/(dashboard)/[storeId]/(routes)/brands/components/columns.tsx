@@ -3,6 +3,7 @@
 "use client"
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';
+import Image from 'next/image';
 
 export type BrandColumn = {
     id: string
@@ -21,7 +22,13 @@ export const columns: ColumnDef<BrandColumn>[] = [
         header: 'Image',
         cell: ({ row }) => (
             <div className="flex items-center">
-                <img src={row.original.imageUrl} alt={row.original.name} className="w-10 h-10 rounded-full mr-2" />
+                <Image
+                    src={row.original.imageUrl}
+                    alt={row.original.name}
+                    className="w-10 h-10 rounded-full mr-2"
+                    width={40}
+                    height={40}
+                />
             </div>
         ),
     },
