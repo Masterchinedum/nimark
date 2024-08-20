@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/ProductForm.tsx
+
 "use client"
 
 import { useState } from 'react';
@@ -6,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
-import { Category, Color, Size, Product as PrismaProduct, Prisma } from "@prisma/client";
+import { Category, Color, Brand, Size, Product as PrismaProduct, Prisma } from "@prisma/client";
 import { AlertModal } from '@/components/modals/alert-modal';
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
@@ -16,7 +18,9 @@ import { Form } from '@/components/ui/form';
 import ImageUploader from './ImageUploader';
 import ProductDetails from './ProductDetails';
 import ProductMetadata from './ProductMetadata';
+import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 import * as z from 'zod';
+
 
 interface ProductFromProps {
     initialData: PrismaProduct & {
@@ -25,6 +29,7 @@ interface ProductFromProps {
     categories: Category[];
     colors: Color[];
     sizes: Size[];
+    brands: Brand[];
 };
 
 interface Image {
@@ -44,6 +49,7 @@ const formSchema = z.object({
     images: z.array(z.object({ url: z.string() })),
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
+    brandId: z.string().min(1).optional(),
     sizeId: z.string().min(1),
     description: z.string().optional(),
     isFeatured: z.boolean().default(false).optional(),
@@ -62,7 +68,8 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     initialData,
     categories,
     colors,
-    sizes
+    sizes,
+    brands,
 }) => {
     const params = useParams();
     const router = useRouter();
@@ -78,33 +85,47 @@ export const ProductForm: React.FC<ProductFromProps> = ({
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: initialData ? {
-            ...initialData,
-            price: parseFloat(String(initialData?.price)),
-            stock: initialData?.stock || 0,
-            description: initialData.description || '',
-            images: initialData.images || [],
+        defaultValues: initialData 
+            ? {
+                ...initialData,
+                price: parseFloat(String(initialData?.price)),
+                stock: initialData?.stock || 0,
+                description: initialData.description || '',
+                images: initialData.images || [],
+                brandId: initialData.brandId || '',
         } : {
             name: '',
             price: 0,
             images: [],
             stock: 0,
             categoryId: '',
+            brandId: '',
             colorId: '',
             sizeId: '',
             description: '',
             isFeatured: false,
             isArchived: false,
-        }
+        },
     });
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
             setLoading(true);
+    
+            let finalBrandId = data.brandId;
+            if (!data.brandId) {
+                const defaultBrand = await getOrCreateDefaultBrand(params.storeId);
+                finalBrandId = defaultBrand.id.toString();
+            }
+            const payload = {
+                ...data,
+                brandId: finalBrandId,
+            };
+    
             if (initialData) {
-                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, {...data, images});
+                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, payload);
             } else {
-                await axios.post(`/api/${params.storeId}/products`, {...data, images});
+                await axios.post(`/api/${params.storeId}/products`, payload);
             }
             router.refresh();
             router.push(`/${params.storeId}/products`);
@@ -161,6 +182,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         categories={categories}
                         sizes={sizes}
                         colors={colors}
+                        brands={brands}
                     />
                     <ProductMetadata 
                         form={form}

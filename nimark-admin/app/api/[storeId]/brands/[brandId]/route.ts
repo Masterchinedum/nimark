@@ -1,3 +1,5 @@
+//nimark-admin/app/api/[storeId]/brands/[brandId]/route.ts
+
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server"

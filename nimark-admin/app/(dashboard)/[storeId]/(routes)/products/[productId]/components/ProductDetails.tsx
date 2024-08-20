@@ -1,8 +1,10 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/ProductDettails.tsx
+
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from "@/components/ui/textarea";
-import { Category, Color, Size } from "@prisma/client";
+import { Category, Color, Size, Brand } from "@prisma/client";
 
 interface ProductDetailsProps {
   form: any;
@@ -10,9 +12,17 @@ interface ProductDetailsProps {
   categories: Category[];
   sizes: Size[];
   colors: Color[];
+  brands: Brand[];
 }
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ form, loading, categories, sizes, colors }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ 
+  form, 
+  loading, 
+  categories, 
+  sizes, 
+  colors,
+  brands, 
+}) => {
   return (
     <div className='grid grid-cols-3 gap-8'>
       <FormField
@@ -88,6 +98,39 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ form, loading, categori
             <FormMessage />
           </FormItem>
         )}
+      />
+      <FormField
+          control={form.control} 
+          name="brandId"
+          render={({field}) => (
+              <FormItem>
+                  <FormLabel>Brand</FormLabel>
+                  <Select
+                      disabled={loading}
+                      onValueChange={field.onChange}
+                      value={field.value}
+                      defaultValue={field.value}
+                  >
+                      <FormControl>
+                          <SelectTrigger>
+                              <SelectValue
+                                  defaultValue={field.value}
+                                  placeholder='Select a Brand'
+                              />
+                          </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                          <SelectItem key="default" value="">Other</SelectItem>
+                          {brands.map(brand => (
+                              <SelectItem key={brand.id} value={brand.id}>
+                                  {brand.name}
+                              </SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                  <FormMessage />
+              </FormItem>
+          )}
       />
 
       <FormField

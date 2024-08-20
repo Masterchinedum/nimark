@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/ProductMetadata.tsx
+
 import { FormField, FormItem, FormControl, FormLabel, FormDescription } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 

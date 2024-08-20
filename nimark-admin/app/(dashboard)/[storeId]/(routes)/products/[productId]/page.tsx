@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/page.tsx
+
 import { Suspense } from 'react';
 import prismadb from "@/lib/prismadb";
 import { ProductForm } from "./components/ProductForm";
@@ -40,6 +42,7 @@ const ProductPage = async ({ params }: { params: { productId: string, storeId: s
                         colors={colors}
                         sizes={sizes}
                         categories={categories}
+                        brands={brands}
                     />
                 </Suspense>
             </div>

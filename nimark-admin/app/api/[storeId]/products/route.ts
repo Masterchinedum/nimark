@@ -3,6 +3,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prismadb from "@/lib/prismadb";
+import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
+
 
 export async function POST(
     req: Request,
@@ -23,6 +25,7 @@ export async function POST(
             isArchived,
             stock,  // New field
             description,
+            brandId,
         } = body; 
 
         if (!userId) {
@@ -65,6 +68,12 @@ export async function POST(
             return new NextResponse("Store Id is required", { status: 400});
         }
 
+        let finalBrandId = brandId;
+        if (!brandId) {
+        const defaultBrand = await getOrCreateDefaultBrand(params.storeId);
+        finalBrandId = defaultBrand.id;
+        }
+
         const storeByUserId = await prismadb.store.findFirst({
             where: {
                 id: params.storeId,
@@ -87,6 +96,7 @@ export async function POST(
                 colorId,
                 stock,  // New field
                 description,
+                brandId: finalBrandId,
                 storeId: params.storeId,
                 images: {
                     createMany: {
@@ -112,6 +122,7 @@ export async function GET(
         const { searchParams } = new URL(req.url);
         const categoryId = searchParams.get('categoryId') || undefined;
         const sizeId = searchParams.get('sizeId') || undefined;
+        const brandId = searchParams.get('brandId') || undefined;
         const colorId = searchParams.get('colorId') || undefined;
         const isFeatured = searchParams.get('isFeatured');
         const isLowStock = searchParams.get('isLowStock'); // New query param
@@ -125,6 +136,7 @@ export async function GET(
                 storeId: params.storeId,
                 categoryId,
                 colorId,
+                brandId,
                 sizeId,
                 isFeatured: isFeatured ? true : undefined,
                 isArchived: false,
@@ -134,7 +146,8 @@ export async function GET(
                 images: true,
                 category: true,
                 color: true,
-                size: true
+                size: true,
+                brand: true,
             },
             orderBy: {
                 createdAt: 'desc'

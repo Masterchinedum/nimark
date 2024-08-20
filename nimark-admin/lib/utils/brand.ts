@@ -1,3 +1,5 @@
+//nimark-admin/lib/utils/brand.ts
+
 import prismadb from "@/lib/prismadb";
 
 export async function getOrCreateDefaultBrand(storeId: string) {

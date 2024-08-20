@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/ImageUploader.tsx
+
 "use client"
 
 import { CldUploadWidget } from 'next-cloudinary';

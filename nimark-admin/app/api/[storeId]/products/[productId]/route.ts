@@ -4,6 +4,7 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { updateProductStock } from "@/lib/productUtils";
+import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 
 
 export async function GET (
@@ -23,7 +24,8 @@ export async function GET (
                 images: true,
                 category: true,
                 size: true,
-                color: true
+                color: true,
+                brand: true,
             }
         });
 
@@ -48,6 +50,7 @@ export async function PATCH (
             categoryId,
             colorId,
             sizeId,
+            brandId,
             images,
             isFeatured,
             isArchived,
@@ -95,6 +98,12 @@ export async function PATCH (
             return new NextResponse("Product id is required", { status: 400 });
         }
 
+        let finalBrandId = brandId;
+        if (!brandId) {
+        const defaultBrand = await getOrCreateDefaultBrand(params.storeId);
+        finalBrandId = defaultBrand.id;
+        }
+
         const storeByUserId = await prismadb.store.findFirst({
             where: {
                 id: params.storeId,
@@ -129,6 +138,7 @@ export async function PATCH (
                 isArchived: isAutoArchived ? true : isArchived, // Auto-archive if stock is 0
                 categoryId,
                 sizeId,
+                brandId: finalBrandId,
                 colorId,
                 stock: updatedStock,
                 description,
