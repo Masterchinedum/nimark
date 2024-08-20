@@ -20,13 +20,19 @@ export const BrandClient: React.FC<BrandClientProps> = ({
 }) => {
     const router = useRouter();
     const params = useParams();
+
+    const handleAddNew = () => {
+        router.push(`/${params.storeId}/brands/new`);
+
+    };
+
     return (
         <>
             <div className="flex items-center justify-between">
                 <Heading
                     title={`Brands (${data?.length})`}
                     description="Manage brands for your store"/>
-                <Button onClick={() => router.push(`/${params.storeId}/brands/new`)}>
+                <Button onClick={handleAddNew}>
                     <Plus className="w-4 h-4 mr-2" />
                     Add New
                 </Button>

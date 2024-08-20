@@ -120,7 +120,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
                           </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                          <SelectItem key="default" value="">Other</SelectItem>
+                          <SelectItem key="default" value="default">Other</SelectItem>
                           {brands.map(brand => (
                               <SelectItem key={brand.id} value={brand.id}>
                                   {brand.name}
