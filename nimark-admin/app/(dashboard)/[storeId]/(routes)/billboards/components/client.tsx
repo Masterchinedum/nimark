@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/billboards/components/client.tsx
+
 "use client"
 
 import { Button } from "@/components/ui/button";

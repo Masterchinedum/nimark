@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/billboards/[billboardId]/page.tsx
+
 import prismadb from "@/lib/prismadb";
 import { BillboardForm } from "./components/billboard-form";
 

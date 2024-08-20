@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/billboards/components/cell-action.tsx
+
 "use Client"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"

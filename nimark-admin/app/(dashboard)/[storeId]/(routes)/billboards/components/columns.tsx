@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/billboards/components/columns.tsx
+
 "use client"
 import { ColumnDef } from '@tanstack/react-table';
 import { CellAction } from './cell-action';

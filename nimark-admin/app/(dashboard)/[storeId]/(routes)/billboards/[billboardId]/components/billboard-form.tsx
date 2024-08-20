@@ -1,3 +1,5 @@
+//nimark-admin/app/(dashboard)/[storeId]/billboards/[billboardId]/components/billboard-form.tsx
+
 "use client"
 
 import { useState } from 'react'
