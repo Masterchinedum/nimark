@@ -49,7 +49,7 @@ const formSchema = z.object({
     images: z.array(z.object({ url: z.string() })),
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
-    brandId: z.string().min(1).optional(),
+    brandId: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
     sizeId: z.string().min(1),
     description: z.string().optional(),
     isFeatured: z.boolean().default(false).optional(),

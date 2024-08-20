@@ -33,6 +33,12 @@ const ProductPage = async ({ params }: { params: { productId: string, storeId: s
         },
     });
 
+    const brands = await prismadb.brand.findMany({
+        where: {
+            storeId: params.storeId
+        }
+    });
+
     return (
         <div className="flex-col">
             <div className="flex-1 p-8 pt-6 space-y-4">
