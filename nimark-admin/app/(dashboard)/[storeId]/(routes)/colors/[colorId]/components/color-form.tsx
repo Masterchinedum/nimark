@@ -92,18 +92,18 @@ export const ColorForm: React.FC<SettingsFromProps> = ({ initialData }) => {
             onConfirm={onDelete}
             loading={loading}
             />
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between">
                 <Heading title={title} description={description} />
                 {initialData && (
-                    <Button variant="destructive" size="sm" onClick={() => setOpen(true)} disabled={loading}>
+                    <Button variant="destructive" size="sm" onClick={() => setOpen(true)} disabled={loading} className="mt-4 md:mt-0">
                         <Trash className="w-4 h-4" />
                     </Button>
                 )}
             </div>
             <Separator />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-                    <div className='grid grid-cols-3 gap-8'>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8 md:space-y-4">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3">
                         <FormField
                             control={form.control} 
                             name="name"

@@ -21,11 +21,11 @@ export const ColorClient: React.FC<ColorClientProps> = ({
     const params = useParams();
     return (
         <>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8">
                 <Heading
                     title={`Colors (${data?.length})`}
                     description="Manage colors for your store"/>
-                <Button onClick={() => router.push(`/${params.storeId}/colors/new`)}>
+                <Button onClick={() => router.push(`/${params.storeId}/colors/new`)} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Add New
                 </Button>
