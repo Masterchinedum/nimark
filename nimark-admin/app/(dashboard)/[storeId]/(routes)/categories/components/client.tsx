@@ -49,7 +49,7 @@ export const CategoryClient: React.FC<CategoryClientProps> = ({
 
     return (
         <>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8">
                 <Heading
                     title={`Categories (${data?.length})`}
                     description="Manage categories for your store"/>
@@ -58,7 +58,7 @@ export const CategoryClient: React.FC<CategoryClientProps> = ({
                         {expandedCategories.size === 0 ? <ChevronRight className="w-4 h-4 mr-2" /> : <ChevronDown className="w-4 h-4 mr-2" />}
                         {expandedCategories.size === 0 ? 'Expand' : 'Collapse'} All
                     </Button>
-                    <Button onClick={() => router.push(`/${params.storeId}/categories/new`)}>
+                    <Button onClick={() => router.push(`/${params.storeId}/categories/new`)} className="w-full md:w-auto">
                         <Plus className="w-4 h-4 mr-2" />
                         Add New
                     </Button>
