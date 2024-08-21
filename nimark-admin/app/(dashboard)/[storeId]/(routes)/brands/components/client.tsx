@@ -28,7 +28,7 @@ export const BrandClient: React.FC<BrandClientProps> = ({
 
     return (
         <>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8">
                 <Heading
                     title={`Brands (${data?.length})`}
                     description="Manage brands for your store"/>
