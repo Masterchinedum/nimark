@@ -2,11 +2,17 @@ import React from 'react'
 import { UserButton } from '@clerk/nextjs'
 import { auth } from '@clerk/nextjs/server'
 import { MainNav } from '@/components/main-nav'
+import { VerticalMainNav } from '@/components/VerticalMainNav'
 import StoreSwitcher from '@/components/store-switcher'
 import { redirect } from 'next/navigation'
 import prismadb from '@/lib/prismadb'
 import { ThemeToggle } from '@/components/theme-toggle'
-import NavbarMenu from './navbarmenu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 const Navbar = async () => {
   const { userId } = auth()
@@ -23,15 +29,25 @@ const Navbar = async () => {
 
   return (
     <div className='border-b'>
-      <div className='flex items-center h-16 px-4 md:px-8 lg:px-12'>
+      <div className='flex items-center h-16 px-4'>
         <StoreSwitcher items={stores} />
-        <div className="hidden md:block">
-          <MainNav className='mx-6 md:mx-8 lg:mx-12' />
+        <div className='hidden md:flex mx-6'>
+          <MainNav />
         </div>
-        <NavbarMenu />
-        <div className="hidden md:flex items-center space-x-4 md:space-x-6 lg:space-x-8">
+        <div className='flex items-center ml-auto space-x-4'>
           <ThemeToggle />
-          <UserButton afterSignOutUrl='/' />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="md:hidden">
+                Open Menu
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 md:hidden">
+              <VerticalMainNav className="px-4 py-3" />
+              <ThemeToggle />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <UserButton afterSignOutUrl='/'/>
         </div>
       </div>
     </div>
