@@ -23,11 +23,11 @@ export const BillboardClient: React.FC<BillboardClientProps> = ({
     const params = useParams();
     return (
         <>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 md:mb-8">
                 <Heading
                     title={`Billboard (${data?.length})`}
                     description="Manage billboards for your store"/>
-                <Button onClick={() => router.push(`/${params.storeId}/billboards/new`)}>
+                <Button onClick={() => router.push(`/${params.storeId}/billboards/new`)} className="w-full md:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Add New
                 </Button>
