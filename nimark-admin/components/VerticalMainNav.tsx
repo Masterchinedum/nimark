@@ -51,13 +51,13 @@ export function VerticalMainNav({ className, ...props }: VerticalMainNavProps) {
       }];
 
     return (
-        <nav className={cn("flex flex-col space-y-3", className)} {...props}>
+        <nav className={cn("flex flex-col space-y-3 w-full", className)} {...props}>
             {routes.map((route, index) => (
                 <Link
                     key={index}
                     href={route.href}
                     className={cn(
-                        "text-sm font-medium transition-colors",
+                        "text-sm font-medium transition-colors w-full block",
                         route.active ? "text-black dark:text-white" : "text-muted-foreground"
                     )}
                 >
