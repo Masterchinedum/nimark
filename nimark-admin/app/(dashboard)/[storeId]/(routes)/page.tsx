@@ -28,66 +28,62 @@ const DashboardPage: React.FC<DashboardPageProps> = async ({ params }) => {
 
   return (
     <div className="flex-col">
-      <div className="flex-1 p-8 pt-6 space-y-4">
-        <Heading title="Dashboard" description="Overview of your store" />
+      <div className="flex-1 p-4 pt-4 space-y-4 md:p-8 md:pt-6">
+        <Heading
+          title="Dashboard"
+          description="Overview of your store"
+          // className="text-lg md:text-xl"
+        />
         <Separator />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Total Revenue
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
               <DollarSign className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 {formatter.format(totalRevenue)}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Sales
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Sales</CardTitle>
               <CreditCard className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 +{salesCount}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Products in Stock
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Products in Stock</CardTitle>
               <Package className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 {stockCount}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">
-                Products out of Stock
-              </CardTitle>
+              <CardTitle className="text-sm font-medium">Products out of Stock</CardTitle>
               <Package className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold md:text-3xl">
                 {outStock}
               </div>
             </CardContent>
           </Card>
         </div>
-        <Card className="col-span-4">
+        <Card className="col-span-1 sm:col-span-2 md:col-span-4">
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
+            <CardTitle className="text-sm md:text-base">Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <Overview data={graphRevenue} />
