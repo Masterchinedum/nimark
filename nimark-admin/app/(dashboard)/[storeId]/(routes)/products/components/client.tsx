@@ -21,21 +21,24 @@ export const ProductClient: React.FC<ProductClientProps> = ({
     const router = useRouter();
     const params = useParams();
     return (
-        <>
-            <div className="flex items-center justify-between">
+        <div className="space-y-4 md:space-y-6 lg:space-y-8">
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
                 <Heading
                     title={`Products (${data?.length})`}
-                    description="Manage products for your store"/>
-                <Button onClick={() => router.push(`/${params.storeId}/products/new`)}>
+                    description="Manage products for your store"
+                />
+                <Button onClick={() => router.push(`/${params.storeId}/products/new`)} className="w-full sm:w-auto">
                     <Plus className="w-4 h-4 mr-2" />
                     Add New
                 </Button>
             </div>
             <Separator />
-            <DataTable columns={columns} data={data} searchKey="name" />
-            <Heading title="API" description="API calls for Products" />
+            <div className="overflow-x-auto">
+                <DataTable columns={columns} data={data} searchKey="name" />
+            </div>
+            <Heading title="API" description="API calls for Products"  />
             <Separator />
             <ApiList entityName="products" entityIdName="productId" />
-        </>
+        </div>
     )
 }

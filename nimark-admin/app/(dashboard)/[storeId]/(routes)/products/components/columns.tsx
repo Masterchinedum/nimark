@@ -76,9 +76,9 @@ export const columns: ColumnDef<ProductColumn>[] = [
         accessorKey: 'color',
         header: 'Color',
         cell: ({ row }) => (
-            <div className='flex items-center gap-x-2'>
+            <div className='flex items-center gap-x-2 text-sm sm:text-base'>
                 {row.original.color}
-                <div className='w-6 h-6 border rounded-full' style={{ backgroundColor: row.original.color }} />
+                <div className='w-4 h-4 sm:w-6 sm:h-6 border rounded-full' style={{ backgroundColor: row.original.color }} />
             </div>
         )
     },

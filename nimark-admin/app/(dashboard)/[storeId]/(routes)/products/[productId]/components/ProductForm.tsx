@@ -153,14 +153,14 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     }
     
     return (
-        <>
+        <div className="space-y-4 md:space-y-6 lg:space-y-8">
             <AlertModal
                 isOpen={open}
                 onClose={() => setOpen(false)}
                 onConfirm={onDelete}
                 loading={loading}
             />
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
                 <Heading title={title} description={description} />
                 {initialData && (
                     <Button variant="destructive" size="sm" onClick={() => setOpen(true)} disabled={loading}>
@@ -170,7 +170,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             </div>
             <Separator />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 md:space-y-8 lg:space-y-10">
                     <ImageUploader 
                         images={images} 
                         setImages={setImages} 
@@ -188,11 +188,11 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         form={form}
                         loading={loading}
                     />
-                    <Button type="submit" disabled={loading}>
+                    <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                         {action}
                     </Button>
                 </form>
             </Form>
-        </>
+        </div>
     )
 }
