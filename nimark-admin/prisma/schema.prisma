@@ -47,6 +47,7 @@ model Category {
   parent      Category?   @relation("ParentChild", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   children    Category[]  @relation("ParentChild")
   products    Product[]   @relation("CategoryToProduct")
+  properties  Json? 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 

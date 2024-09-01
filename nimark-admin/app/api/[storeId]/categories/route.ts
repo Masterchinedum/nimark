@@ -12,7 +12,7 @@ export async function POST(
         const { userId } = auth();
         const body = await req.json();
 
-        const { name, billboardId, parentId } = body; 
+        const { name, billboardId, parentId, properties } = body; 
 
         if (!userId) {
             return new NextResponse("Unauthenticated", { status: 401 });
@@ -46,7 +46,8 @@ export async function POST(
                 name,
                 billboardId,
                 storeId: params.storeId,
-                parentId: parentId || null
+                parentId: parentId || null,
+                properties: properties || null
             }
         })
 
