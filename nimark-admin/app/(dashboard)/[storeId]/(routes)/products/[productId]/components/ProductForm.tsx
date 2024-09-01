@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -20,6 +20,7 @@ import ProductDetails from './ProductDetails';
 import ProductMetadata from './ProductMetadata';
 import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 import * as z from 'zod';
+import CategoryProperties from './CategoryProperties';
 
 
 interface ProductFromProps {
@@ -52,6 +53,7 @@ const formSchema = z.object({
     brandId: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
     sizeId: z.string().min(1),
     description: z.string().optional(),
+    properties: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
     isFeatured: z.boolean().default(false).optional(),
     isArchived: z.boolean().default(false).optional()
 });
@@ -108,6 +110,15 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         },
     });
 
+    const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+
+    useEffect(() => {
+        if (form.watch('categoryId')) {
+            const category = categories.find(c => c.id === form.watch('categoryId'));
+            setSelectedCategory(category || null);
+        }
+    }, [form.watch('categoryId'), categories]);
+
     const onSubmit = async (data: ProductFormValues) => {
         try {
             setLoading(true);
@@ -120,6 +131,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             const payload = {
                 ...data,
                 brandId: finalBrandId,
+                properties: data.properties ? JSON.stringify(data.properties) : null,
             };
     
             if (initialData) {
@@ -184,6 +196,12 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         colors={colors}
                         brands={brands}
                     />
+                    {selectedCategory && selectedCategory.properties && (
+                        <CategoryProperties
+                            form={form}
+                            categoryProperties={JSON.parse(selectedCategory.properties as string)}
+                        />
+                    )}
                     <ProductMetadata 
                         form={form}
                         loading={loading}

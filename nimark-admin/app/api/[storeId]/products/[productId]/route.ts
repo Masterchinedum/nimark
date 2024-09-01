@@ -57,6 +57,7 @@ export async function PATCH (
             stock,
             stockChange,  // New field
             description,
+            properties,
         } = body;
 
         if (!userId) {
@@ -142,6 +143,7 @@ export async function PATCH (
                 colorId,
                 stock: updatedStock,
                 description,
+                properties: properties ? JSON.stringify(properties) : null,
                 images: {
                     deleteMany: {}
                 },

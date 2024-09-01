@@ -26,6 +26,7 @@ export async function POST(
             stock,  // New field
             description,
             brandId,
+            properties,
         } = body; 
 
         if (!userId) {
@@ -98,6 +99,7 @@ export async function POST(
                 description,
                 brandId: finalBrandId,
                 storeId: params.storeId,
+                properties: properties ? JSON.stringify(properties) : null,
                 images: {
                     createMany: {
                         data: images.map((image: { url: string }) => ({ url: image.url }))
