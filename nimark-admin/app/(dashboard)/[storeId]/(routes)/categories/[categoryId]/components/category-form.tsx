@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import Properties from "./properties";
 
 interface SettingsFormProps {
   initialData: Category | null;
@@ -43,6 +44,10 @@ const formSchema = z.object({
   name: z.string().min(1),
   billboardId: z.string().min(1),
   parentId: z.string().optional(),
+  properties: z.array(z.object({
+    name: z.string(),
+    values: z.string()
+  })).optional(),
 });
 
 type CategoryFormValues = z.infer<typeof formSchema>;
@@ -58,6 +63,9 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [availableParents, setAvailableParents] = useState<Category[]>([]);
+  const [properties, setProperties] = useState<{name: string, values: string}[]>(
+    initialData?.properties ? JSON.parse(initialData.properties as string) : []
+  );
 
   const title = initialData ? "Edit category" : "Create category";
   const description = initialData ? "Edit a category" : "Add a new category";
@@ -102,7 +110,8 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
       setLoading(true);
       const submissionData = {
         ...data,
-        parentId: data.parentId === "none" ? null : data.parentId
+        parentId: data.parentId === "none" ? null : data.parentId,
+        properties: JSON.stringify(properties)
       };
       if (initialData) {
         await axios.patch(
@@ -110,7 +119,7 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
           submissionData
         );
       } else {
-        await axios.post(`/api/${params.storeId}/categories`, data);
+        await axios.post(`/api/${params.storeId}/categories`, submissionData);
       }
       router.refresh();
       router.push(`/${params.storeId}/categories`);
@@ -252,6 +261,25 @@ export const CategoryForm: React.FC<SettingsFormProps> = ({
                   )}
                 />
               </div>
+              <Properties
+                properties={properties}
+                onAddProperty={() => setProperties([...properties, {name: '', values: ''}])}
+                onRemoveProperty={(index) => {
+                  const newProperties = [...properties];
+                  newProperties.splice(index, 1);
+                  setProperties(newProperties);
+                }}
+                onNameChange={(index, property, name) => {
+                  const newProperties = [...properties];
+                  newProperties[index] = {...property, name};
+                  setProperties(newProperties);
+                }}
+                onValuesChange={(index, property, values) => {
+                  const newProperties = [...properties];
+                  newProperties[index] = {...property, values};
+                  setProperties(newProperties);
+                }}
+              />
               <Button disabled={loading} className="ml-auto" type="submit">
                 {action}
               </Button>
