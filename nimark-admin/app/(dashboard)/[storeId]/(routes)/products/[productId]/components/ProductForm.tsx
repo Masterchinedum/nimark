@@ -21,10 +21,15 @@ import ProductMetadata from './ProductMetadata';
 import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 import * as z from 'zod';
 import CategoryProperties from './CategoryProperties';
+import RelatedProducts from './RelatedProducts';
 
+
+interface ExtendedPrismaProduct extends PrismaProduct {
+    relatedTo?: { id: string }[];
+}
 
 interface ProductFromProps {
-    initialData: PrismaProduct & {
+    initialData: ExtendedPrismaProduct & {
         images: Image[]
     } | null;
     categories: Category[];
@@ -53,6 +58,7 @@ const formSchema = z.object({
     brandId: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
     sizeId: z.string().min(1),
     description: z.string().optional(),
+    relatedProductIds: z.array(z.string()).optional(),
     properties: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional(),
     isFeatured: z.boolean().default(false).optional(),
     isArchived: z.boolean().default(false).optional()
@@ -98,6 +104,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 properties: initialData.properties 
                     ? JSON.parse(initialData.properties as string) 
                     : {},
+                relatedProductIds: initialData.relatedTo?.map(product => product.id) || [],
         } : {
             name: '',
             price: 0,
@@ -111,6 +118,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             isFeatured: false,
             isArchived: false,
             properties: {},
+            relatedProductIds: [],
         },
     });
 
@@ -193,20 +201,25 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         form={form}
                     />
                     <div className="space-y-6 p-4 md:p-6 lg:p-8 bg-white rounded-lg shadow-md">
-                    <ProductDetails 
-                        form={form}
-                        loading={loading}
-                        categories={categories}
-                        sizes={sizes}
-                        colors={colors}
-                        brands={brands}
-                    />
-                    {selectedCategory && selectedCategory.properties && (
-                        <CategoryProperties
+                        <ProductDetails 
                             form={form}
-                            categoryProperties={JSON.parse(selectedCategory.properties as string)}
+                            loading={loading}
+                            categories={categories}
+                            sizes={sizes}
+                            colors={colors}
+                            brands={brands}
                         />
-                    )}
+                        {selectedCategory && selectedCategory.properties && (
+                            <CategoryProperties
+                                form={form}
+                                categoryProperties={JSON.parse(selectedCategory.properties as string)}
+                            />
+                        )}
+
+                        <RelatedProducts
+                            form={form}
+                            storeId={params.storeId as string}
+                        />
                     </div>
                     <ProductMetadata 
                         form={form}
