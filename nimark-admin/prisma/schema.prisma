@@ -59,27 +59,27 @@ model Category {
 
 model Product {
   id         String      @id @default(uuid())
-  storeId    String // Foreign Key to Store
+  storeId    String
   store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
-  categoryId String // Foreign Key to Category
+  categoryId String
   category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  properties  Json?
+  properties Json?
   name       String
   description String? 
   price      Decimal
   stock      Int         @default(0)
   isFeatured Boolean     @default(false)
   isArchived Boolean     @default(false)
-  // relatedTo      Product[] @relation("RelatedProducts")
-  // relatedFrom    Product[] @relation("RelatedProducts")
-  sizeId     String // Foreign Key to Size
+  relatedTo  Product[]   @relation("RelatedProducts")
+  relatedFrom Product[]  @relation("RelatedProducts")
+  sizeId     String
   size       Size        @relation(fields: [sizeId], references: [id])
-  colorId    String // Foreign Key to Color
+  colorId    String
   color      Color       @relation(fields: [colorId], references: [id])
   brandId    String?
   brand      Brand?      @relation(fields: [brandId], references: [id])
-  images     Image[] // Relation to Image model
-  orderItems OrderItem[] // Relation to Order model
+  images     Image[]
+  orderItems OrderItem[]
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 
