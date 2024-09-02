@@ -99,7 +99,7 @@ export async function POST(
                 description,
                 brandId: finalBrandId,
                 storeId: params.storeId,
-                properties: properties ? JSON.stringify(properties) : null,
+                properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
                 images: {
                     createMany: {
                         data: images.map((image: { url: string }) => ({ url: image.url }))

@@ -95,6 +95,9 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 description: initialData.description || '',
                 images: initialData.images || [],
                 brandId: initialData.brandId || '',
+                properties: initialData.properties 
+                    ? JSON.parse(initialData.properties as string) 
+                    : {},
         } : {
             name: '',
             price: 0,
@@ -107,6 +110,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             description: '',
             isFeatured: false,
             isArchived: false,
+            properties: {},
         },
     });
 
@@ -188,6 +192,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                         setImages={setImages} 
                         form={form}
                     />
+                    <div className="space-y-6 p-4 md:p-6 lg:p-8 bg-white rounded-lg shadow-md">
                     <ProductDetails 
                         form={form}
                         loading={loading}
@@ -202,6 +207,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                             categoryProperties={JSON.parse(selectedCategory.properties as string)}
                         />
                     )}
+                    </div>
                     <ProductMetadata 
                         form={form}
                         loading={loading}

@@ -143,7 +143,7 @@ export async function PATCH (
                 colorId,
                 stock: updatedStock,
                 description,
-                properties: properties ? JSON.stringify(properties) : null,
+                properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
                 images: {
                     deleteMany: {}
                 },
