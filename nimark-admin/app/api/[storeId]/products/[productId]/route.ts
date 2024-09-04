@@ -57,6 +57,8 @@ export async function PATCH (
             stock,
             stockChange,  // New field
             description,
+            properties,
+            relatedProductIds,
         } = body;
 
         if (!userId) {
@@ -142,10 +144,14 @@ export async function PATCH (
                 colorId,
                 stock: updatedStock,
                 description,
+                properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
                 images: {
                     deleteMany: {}
                 },
-                storeId: params.storeId
+                storeId: params.storeId,
+                relatedTo: {
+                    set: relatedProductIds ? relatedProductIds.map((id: string) => ({ id })) : []
+                }
             }
         });
 
