@@ -1,7 +1,4 @@
-//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/components/ImageUploader.tsx
-
-"use client"
-
+import React from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
 import { CldImage } from 'next-cloudinary';
 import { UseFormReturn } from 'react-hook-form';
@@ -47,6 +44,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages, form }
               onClick={() => removeImage(index)}
               size="sm"
               variant="destructive"
+              type="button" // Ensure this is a button type to prevent form submission
             >
               Remove
             </Button>

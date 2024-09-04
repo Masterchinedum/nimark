@@ -131,6 +131,10 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         }
     }, [form.watch('categoryId'), categories]);
 
+    useEffect(() => {
+        form.setValue('images', images);
+      }, [images, form]);
+
     const onSubmit = async (data: ProductFormValues) => {
         try {
             setLoading(true);
@@ -144,7 +148,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 ...data,
                 brandId: finalBrandId,
                 properties: data.properties ? JSON.stringify(data.properties) : null,
-                images: images, // Use the images state instead of form data
+                images: images,
               };
     
             if (initialData) {

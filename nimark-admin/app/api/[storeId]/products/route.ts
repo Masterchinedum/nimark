@@ -23,7 +23,7 @@ export async function POST(
             images,
             isFeatured,
             isArchived,
-            stock,  // New field
+            stock, 
             description,
             brandId,
             properties,
@@ -130,7 +130,7 @@ export async function GET(
         const brandId = searchParams.get('brandId') || undefined;
         const colorId = searchParams.get('colorId') || undefined;
         const isFeatured = searchParams.get('isFeatured');
-        const isLowStock = searchParams.get('isLowStock'); // New query param
+        const isLowStock = searchParams.get('isLowStock'); 
 
         if (!params.storeId) {
             return new NextResponse("Store Id is required", { status: 400});
@@ -145,7 +145,7 @@ export async function GET(
                 sizeId,
                 isFeatured: isFeatured ? true : undefined,
                 isArchived: false,
-                stock: isLowStock === 'true' ? { lte: 5 } : undefined // Example of low stock filter
+                stock: isLowStock === 'true' ? { lte: 5 } : undefined 
             },
             include: {
                 images: true,
