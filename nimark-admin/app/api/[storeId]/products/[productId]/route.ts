@@ -133,11 +133,11 @@ export async function PATCH (
             where: {
                 id: params.productId
             },
-            data : {
+            data: {
                 name,
                 price,
                 isFeatured,
-                isArchived: isAutoArchived ? true : isArchived, // Auto-archive if stock is 0
+                isArchived: isAutoArchived ? true : isArchived,
                 categoryId,
                 sizeId,
                 brandId: finalBrandId,
@@ -145,29 +145,26 @@ export async function PATCH (
                 stock: updatedStock,
                 description,
                 properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
-                images: {
-                    deleteMany: {}
-                },
                 storeId: params.storeId,
                 relatedTo: {
-                    set: relatedProductIds ? relatedProductIds.map((id: string) => ({ id })) : []
+                set: relatedProductIds ? relatedProductIds.map((id: string) => ({ id })) : []
                 }
+            }
+            });
+
+        // Delete existing images
+        await prismadb.image.deleteMany({
+            where: {
+            productId: params.productId
             }
         });
 
-        await prismadb.product.update({
-            where: {
-                id: params.productId
-            },
-            data: {
-                images: {
-                    createMany: {
-                        data: [
-                            ...images.map((image: { url: string }) => image)
-                        ]
-                    }
-                }
-            }
+         // Create new images
+        await prismadb.image.createMany({
+            data: images.map((image: { url: string }) => ({
+            productId: params.productId,
+            url: image.url
+            }))
         });
 
         return NextResponse.json(product);

@@ -88,37 +88,36 @@ export async function POST(
         }
 
         const product = await prismadb.product.create({
-            data : {
-                name,
-                price,
-                isFeatured,
-                isArchived: stock === 0 ? true : isArchived,
-                categoryId,
-                sizeId,
-                colorId,
-                stock,  // New field
-                description,
-                brandId: finalBrandId,
-                storeId: params.storeId,
-                properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
-                images: {
-                    createMany: {
-                        data: images.map((image: { url: string }) => ({ url: image.url }))
-                      }
-                },
-                relatedTo: {
-                    connect: relatedProductIds ? relatedProductIds.map((id: string) => ({ id })) : []
+            data: {
+              name,
+              price,
+              isFeatured,
+              isArchived: stock === 0 ? true : isArchived,
+              categoryId,
+              sizeId,
+              colorId,
+              stock,
+              description,
+              brandId: finalBrandId,
+              storeId: params.storeId,
+              properties: properties ? JSON.parse(JSON.stringify(properties)) : null,
+              images: {
+                createMany: {
+                  data: images.map((image: { url: string }) => ({ url: image.url }))
                 }
+              },
+              relatedTo: {
+                connect: relatedProductIds ? relatedProductIds.map((id: string) => ({ id })) : []
+              }
             }
-        });
-
-        return NextResponse.json(product);
-
-    } catch (err) {
-        console.log(`[PRODUCTS_POST] ${err}`);
-        return new NextResponse(`Internal error`, { status: 500});
-    }
-}
+          });
+      
+          return NextResponse.json(product);
+        } catch (err) {
+          console.log(`[PRODUCTS_POST] ${err}`);
+          return new NextResponse(`Internal error`, { status: 500 });
+        }
+      }
 
 export async function GET(
     req: Request,

@@ -144,7 +144,8 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 ...data,
                 brandId: finalBrandId,
                 properties: data.properties ? JSON.stringify(data.properties) : null,
-            };
+                images: images, // Use the images state instead of form data
+              };
     
             if (initialData) {
                 await axios.patch(`/api/${params.storeId}/products/${params.productId}`, payload);
