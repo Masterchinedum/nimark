@@ -22,6 +22,7 @@ import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 import * as z from 'zod';
 import CategoryProperties from './CategoryProperties';
 import RelatedProducts from './RelatedProducts';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
 interface ExtendedPrismaProduct extends PrismaProduct {
@@ -64,9 +65,10 @@ const formSchema = z.object({
     isArchived: z.boolean().default(false).optional()
 });
 
-type UploadedImage = {
+interface UploadedImage {
+    id: string;
     url: string;
-};
+  };
 
 type ProductFormValues = z.infer<typeof formSchema> & {
     images: UploadedImage[];
@@ -89,8 +91,9 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     const description = initialData ? 'Edit a product' : 'Add a new product'
     const toastMessage = initialData ? 'Product updated.' : 'Product created.'
     const action = initialData ? 'Save changes' : 'Create'
-    const [images, setImages] = useState<UploadedImage[]>(initialData?.images || []);
-
+    const [images, setImages] = useState<UploadedImage[]>(
+        initialData?.images.map(img => ({ id: img.id, url: img.url })) || []
+    );
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData 
@@ -131,6 +134,10 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         }
     }, [form.watch('categoryId'), categories]);
 
+    useEffect(() => {
+        form.setValue('images', images);
+      }, [images, form]);
+
     const onSubmit = async (data: ProductFormValues) => {
         try {
             setLoading(true);
@@ -144,7 +151,8 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 ...data,
                 brandId: finalBrandId,
                 properties: data.properties ? JSON.stringify(data.properties) : null,
-            };
+                images: images,
+              };
     
             if (initialData) {
                 await axios.patch(`/api/${params.storeId}/products/${params.productId}`, payload);
