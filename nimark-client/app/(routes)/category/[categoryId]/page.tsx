@@ -39,9 +39,7 @@ const CategoryPage:React.FC<CategoryPageProps> = async ({ params, searchParams }
                 />
                 <div className="px-4 pb-24 sm:px-6 lg:px-8">
                     <div className="lg:grid lg:grid-cols-5 lg:gap-x-8">
-                        {/*Add Mobile Filters*/}
                         <MobileFilters sizes={sizes} colors={colors} />
-                        {/*Add Computer Filters*/}
                         <div className="hidden lg:block">
                             <Filter
                                 valueKey="sizeId"
