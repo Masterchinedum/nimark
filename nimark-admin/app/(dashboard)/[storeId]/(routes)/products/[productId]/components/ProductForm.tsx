@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 import * as z from 'zod';
 import CategoryProperties from './CategoryProperties';
 import RelatedProducts from './RelatedProducts';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 
 
 interface ExtendedPrismaProduct extends PrismaProduct {
@@ -127,12 +127,15 @@ export const ProductForm: React.FC<ProductFromProps> = ({
 
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
+    const updateSelectedCategory = useCallback(() => {
+        const categoryId = form.watch('categoryId');
+        const category = categories.find(c => c.id === categoryId);
+        setSelectedCategory(category || null);
+    }, [categories, form]);
+
     useEffect(() => {
-        if (form.watch('categoryId')) {
-            const category = categories.find(c => c.id === form.watch('categoryId'));
-            setSelectedCategory(category || null);
-        }
-    }, [form.watch('categoryId'), categories]);
+        updateSelectedCategory();
+    }, [updateSelectedCategory]);
 
     useEffect(() => {
         form.setValue('images', images);
