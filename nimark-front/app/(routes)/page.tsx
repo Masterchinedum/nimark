@@ -1,21 +1,38 @@
-import { getProducts } from '@/lib/api';
-import { ProductCard } from '@/components/product/ProductCard';
+import React from 'react';
+import { Product } from '@/types/product';
+import ProductCard from '@/components/product/ProductCard';
 
-export default async function Home() {
-  const products = await getProducts();
+async function getFeaturedProducts(): Promise<Product[]> {
+  // This is a placeholder. Replace with actual API call.
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?featured=true`);
+  return res.json();
+}
+
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts();
 
   return (
-    <div className="bg-white">
-      <div><h1 className="text-2xl font-bold tracking-tight text-gray-900">Hello this is the HomePage</h1></div>
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Our Products</h2>
-
-        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-          {products.map((product) => (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">Welcome to Nimark</h1>
+      
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Featured Products</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-      </div>
+      </section>
+      
+      <section className="mb-12">
+        <h2 className="text-2xl font-semibold mb-4">Shop by Category</h2>
+        {/* Add category list/grid here */}
+      </section>
+      
+      <section>
+        <h2 className="text-2xl font-semibold mb-4">Latest Offers</h2>
+        {/* Add offers or promotions here */}
+      </section>
     </div>
   );
 }
