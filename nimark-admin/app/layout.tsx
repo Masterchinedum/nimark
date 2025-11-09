@@ -2,8 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 
 import { ModalProvider } from '@/providers/modal-provider';
-
-import { ClerkProvider } from '@clerk/nextjs' ;
+import { SessionProvider } from "next-auth/react"
 import { ToasterProvider } from "@/providers/toast-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 
@@ -22,16 +21,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
+    <html lang="en">
+      <body className={inter.className}>
+        <SessionProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <ToasterProvider />
             <ModalProvider />
             {children}
           </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+        </SessionProvider>
+      </body>
+    </html>
   );
 }

@@ -1,39 +1,29 @@
-// import { clerkMiddleware } from "@clerk/nextjs/server";
+import { auth } from "@/auth"
+import { NextResponse } from "next/server"
 
-// export default clerkMiddleware({
-//   publicRoutes: ["/api/:path*"],
-// });
+export default auth((req) => {
+  const isLoggedIn = !!req.auth
+  const isAuthPage = req.nextUrl.pathname.startsWith('/sign-in') || 
+                     req.nextUrl.pathname.startsWith('/sign-up')
+  const isApiRoute = req.nextUrl.pathname.startsWith('/api')
 
-// export const config = {
-//   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-// };
+  // Allow API routes and webhooks to pass through
+  if (isApiRoute) {
+    return NextResponse.next()
+  }
 
-// import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+  // Redirect logged-in users away from auth pages
+  if (isAuthPage && isLoggedIn) {
+    return NextResponse.redirect(new URL('/', req.url))
+  }
 
-// const isApiRoute = createRouteMatcher(['/api/:path*']);
+  // Redirect non-logged-in users to sign-in (except for auth pages)
+  if (!isAuthPage && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/sign-in', req.url))
+  }
 
-// export default clerkMiddleware((auth, req) => {
-//   if (!isApiRoute(req)) {
-//     auth().protect();
-//   }
-// });
-
-
-// export const config = {
-//   matcher: [
-//     // Skip Next.js internals and all static files, unless found in search params
-//     '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-//     // Always run for API routes
-//     '/(api|trpc)(.*)',
-//   ],
-// };
-
-//Thiird configuration trial
-
-
-import { clerkMiddleware } from "@clerk/nextjs/server";
-
-export default clerkMiddleware();
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [
@@ -42,4 +32,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-};
+}

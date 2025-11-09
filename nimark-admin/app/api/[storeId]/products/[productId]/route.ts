@@ -1,7 +1,7 @@
 //nimark-admin/app/api/[storeId]/products/[productId]/route.ts
 
 import prismadb from "@/lib/prismadb";
-import { auth } from "@clerk/nextjs/server";
+import { requireAuth } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server";
 import { updateProductStock } from "@/lib/productUtils";
 import { getOrCreateDefaultBrand } from "@/lib/utils/brand";

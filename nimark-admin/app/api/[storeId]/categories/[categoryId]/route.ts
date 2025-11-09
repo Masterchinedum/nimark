@@ -1,7 +1,7 @@
 // nimark-admin/app/api/[storeId]/categories/[categoryId]/route.ts
 
 import prismadb from "@/lib/prismadb";
-import { auth } from "@clerk/nextjs/server";
+import { requireAuth } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
 export async function GET (

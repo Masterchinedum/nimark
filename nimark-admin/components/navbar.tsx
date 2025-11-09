@@ -1,5 +1,5 @@
 import React from 'react'
-import { auth } from '@clerk/nextjs/server'
+import { auth } from '@/auth'
 import { MainNav } from '@/components/main-nav'
 import StoreSwitcher from '@/components/store-switcher'
 import { redirect } from 'next/navigation'
@@ -7,15 +7,15 @@ import prismadb from '@/lib/prismadb'
 import ClientNavbar from './ClientNavbar'  // Import the client component
 
 const Navbar = async () => {
-  const { userId } = auth()
+  const session = await auth()
 
-  if (!userId) {
+  if (!session?.user?.id) {
     redirect('/sign-in')
   }
 
   const stores = await prismadb?.store.findMany({
     where: {
-      userId,
+      userId: session.user.id,
     },
   })
 
@@ -27,7 +27,7 @@ const Navbar = async () => {
           <MainNav />
         </div>
         {/* Render the client component and pass necessary props */}
-        <ClientNavbar stores={stores} />
+        <ClientNavbar stores={stores} user={session.user} />
       </div>
     </div>
   )
