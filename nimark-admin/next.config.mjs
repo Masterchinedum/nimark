@@ -10,6 +10,7 @@ const nextConfig = {
             },
         ],
     },
+    serverExternalPackages: ['paystack-node', 'got', 'cacheable-request', 'keyv'],
 };
 
 export default nextConfig;
