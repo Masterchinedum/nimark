@@ -49,11 +49,16 @@ type ProductWithPrice = PrismaProduct & {
     price: Prisma.Decimal;
 }
 
+interface UploadedImage {
+    id: string;
+    url: string;
+}
+
 const formSchema = z.object({
     name: z.string().min(1),
-    price: z.coerce.number().min(1),
-    stock: z.coerce.number().min(0),
-    images: z.array(z.object({ url: z.string() })),
+    price: z.number().min(1),
+    stock: z.number().min(0),
+    images: z.array(z.object({ id: z.string(), url: z.string() })),
     categoryId: z.string().min(1),
     colorId: z.string().min(1),
     brandId: z.union([z.string().min(1), z.array(z.string().min(1))]).optional(),
@@ -65,14 +70,7 @@ const formSchema = z.object({
     isArchived: z.boolean().default(false).optional()
 });
 
-interface UploadedImage {
-    id: string;
-    url: string;
-  };
-
-type ProductFormValues = z.infer<typeof formSchema> & {
-    images: UploadedImage[];
-};
+type ProductFormValues = z.infer<typeof formSchema>;
 
 export const ProductForm: React.FC<ProductFromProps> = ({
     initialData,

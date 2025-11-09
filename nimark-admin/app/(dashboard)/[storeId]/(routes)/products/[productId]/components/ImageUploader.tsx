@@ -89,6 +89,19 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages, form }
     }
   };
 
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+  // Guard: if upload preset isn't configured, show a friendly hint and disable uploads
+  if (!uploadPreset) {
+    return (
+      <div className="mb-4">
+        <div className="text-sm text-muted-foreground">
+          Cloudinary upload is not configured. Set NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET in your .env and restart the dev server.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mb-4">
       <DndContext 
@@ -109,7 +122,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ images, setImages, form }
       </DndContext>
 
       <CldUploadWidget
-        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+        uploadPreset={uploadPreset}
         onSuccess={onUpload}
         options={{
           maxFiles: 10,
