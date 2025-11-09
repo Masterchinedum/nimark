@@ -41,7 +41,8 @@ export async function PATCH (
     { params }: { params: { storeId: string, productId: string }}
 ) {
     try {
-        const { userId } = auth();
+        const { userId, error } = await requireAuth();
+        if (error) return error;
         const body = await req.json();
 
         const {
@@ -61,9 +62,7 @@ export async function PATCH (
             relatedProductIds,
         } = body;
 
-        if (!userId) {
-            return new NextResponse("Unauthenticated", { status: 401 });
-        }
+        
 
         if (!name) {
             return new NextResponse("Name is required", { status: 400});
@@ -109,7 +108,7 @@ export async function PATCH (
         const storeByUserId = await prismadb.store.findFirst({
             where: {
                 id: params.storeId,
-                userId
+                userId: userId!
             }
         });
 
@@ -179,11 +178,10 @@ export async function DELETE (
     { params }: { params: { storeId: string, productId: string }}
 ) {
     try {
-        const { userId } = auth();
+        const { userId, error } = await requireAuth();
+        if (error) return error;
 
-        if (!userId) {
-            return new NextResponse("Unauthenticated", { status: 401 });
-        }
+        
 
         if(!params.productId) {
             return new NextResponse("Product id is required", { status: 400 });
@@ -192,7 +190,7 @@ export async function DELETE (
         const storeByUserId = await prismadb.store.findFirst({
             where: {
                 id: params.storeId,
-                userId
+                userId: userId!
             }
         });
 

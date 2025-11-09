@@ -11,7 +11,8 @@ export async function POST(
     { params }: { params: { storeId: string } }
 ) {
     try {
-        const { userId } = auth();
+        const { userId, error } = await requireAuth();
+        if (error) return error;
         const body = await req.json();
 
         const {
@@ -30,9 +31,7 @@ export async function POST(
             relatedProductIds,
         } = body; 
 
-        if (!userId) {
-            return new NextResponse("Unauthenticated", { status: 401 });
-        }
+        
 
         if (!name) {
             return new NextResponse("Name is required", { status: 400});
@@ -79,7 +78,7 @@ export async function POST(
         const storeByUserId = await prismadb.store.findFirst({
             where: {
                 id: params.storeId,
-                userId
+                userId: userId!
             }
         });
 
