@@ -6,10 +6,8 @@ import prismadb from "@/lib/prismadb";
 import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 
 
-export async function POST(
-    req: Request,
-    { params }: { params: { storeId: string } }
-) {
+export async function POST(req: Request, props: { params: Promise<{ storeId: string }> }) {
+    const params = await props.params;
     try {
         const { userId, error } = await requireAuth();
         if (error) return error;
@@ -116,12 +114,10 @@ export async function POST(
           console.log(`[PRODUCTS_POST] ${err}`);
           return new NextResponse(`Internal error`, { status: 500 });
         }
-      }
+}
 
-export async function GET(
-    req: Request,
-    { params }: { params: { storeId: string } }
-) {
+export async function GET(req: Request, props: { params: Promise<{ storeId: string }> }) {
+    const params = await props.params;
     try {
         const { searchParams } = new URL(req.url);
         const categoryId = searchParams.get('categoryId') || undefined;

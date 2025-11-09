@@ -8,7 +8,8 @@ interface SettingsPageProps {
         storeId: string;
     }
 };
-const SettingsPage: React.FC<SettingsPageProps> = async ({ params }) => {
+const SettingsPage: React.FC<SettingsPageProps> = async props => {
+    const params = await props.params;
     const session = await auth();
 
     if(!session?.user?.id) {

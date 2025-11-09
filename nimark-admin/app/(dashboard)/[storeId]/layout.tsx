@@ -3,13 +3,18 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
-export default async function DashboardLayout({
-    children,
-    params
-}: {
-    children: React.ReactNode;
-    params: { storeId: string }
-}) {
+export default async function DashboardLayout(
+    props: {
+        children: React.ReactNode;
+        params: Promise<{ storeId: string }>
+    }
+) {
+    const params = await props.params;
+
+    const {
+        children
+    } = props;
+
     const session = await auth();
 
     if (!session?.user?.id) {

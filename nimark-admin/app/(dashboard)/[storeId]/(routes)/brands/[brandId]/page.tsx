@@ -3,7 +3,8 @@
 import prismadb from "@/lib/prismadb";
 import { BrandForm } from "./components/brand-form";
 
-const BrandPage = async ({ params }: { params: { brandId?: string } }) => {
+const BrandPage = async (props: { params: Promise<{ brandId?: string }> }) => {
+    const params = await props.params;
     if (!params.brandId) {
         return <div>Brand ID not provided</div>;
     }

@@ -4,10 +4,8 @@ import prismadb from "@/lib/prismadb";
 import { requireAuth } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
-export async function GET (
-    req: Request,
-    { params }: { params: { brandId: string }}
-) {
+export async function GET(req: Request, props: { params: Promise<{ brandId: string }>}) {
+    const params = await props.params;
     try {
         if(!params.brandId) {
             return new NextResponse("brand id is required", { status: 400 });
@@ -26,10 +24,11 @@ export async function GET (
     }
 }
 
-export async function PATCH (
+export async function PATCH(
     req: Request,
-    { params }: { params: { storeId: string, brandId: string }}
+    props: { params: Promise<{ storeId: string, brandId: string }>}
 ) {
+    const params = await props.params;
     try {
         const { userId, error } = await requireAuth();
         if (error) return error;
@@ -83,10 +82,11 @@ export async function PATCH (
 
 //// Delete Method
 
-export async function DELETE (
+export async function DELETE(
     req: Request,
-    { params }: { params: { storeId: string, brandId: string }}
+    props: { params: Promise<{ storeId: string, brandId: string }>}
 ) {
+    const params = await props.params;
     try {
         const { userId, error } = await requireAuth();
         if (error) return error;

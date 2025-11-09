@@ -15,7 +15,7 @@ function verifyWebhook(requestBody: string, signature: string): boolean {
 
 export async function POST(req: Request) {
     const body = await req.text();
-    const signature = headers().get("X-Paystack-Signature") as string;
+    const signature = (await headers()).get("X-Paystack-Signature") as string;
 
     try {
         // Verify the webhook signature

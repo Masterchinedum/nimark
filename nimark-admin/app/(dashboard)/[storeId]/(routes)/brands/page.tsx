@@ -5,11 +5,12 @@ import prismadb from '@/lib/prismadb'
 import { BrandClient } from './components/client'
 import { BrandColumn } from './components/columns'
 
-const BrandsPage = async ({ 
-    params
-}: { 
-    params: { storeId: string }
-}) => {
+const BrandsPage = async (
+    props: { 
+        params: Promise<{ storeId: string }>
+    }
+) => {
+    const params = await props.params;
     const brands = await prismadb.brand.findMany({
         where: {
             storeId: params.storeId,
