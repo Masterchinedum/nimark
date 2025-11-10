@@ -45,7 +45,15 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">Price</FormLabel>
               <FormControl>
-                <Input className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" disabled={loading} placeholder='Product Price' {...field} />
+                <Input 
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
+                  type="number" 
+                  step="0.01"
+                  disabled={loading} 
+                  placeholder='Product Price' 
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                />
               </FormControl>
               <FormMessage className="text-xs text-red-500 mt-1" />
             </FormItem>
@@ -61,7 +69,14 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
             <FormItem>
               <FormLabel className="text-sm font-medium text-gray-700">Stock</FormLabel>
               <FormControl>
-                <Input className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" type="number" disabled={loading} placeholder='Product Stock' {...field} />
+                <Input 
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
+                  type="number" 
+                  disabled={loading} 
+                  placeholder='Product Stock' 
+                  {...field}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                />
               </FormControl>
               <FormMessage className="text-xs text-red-500 mt-1" />
             </FormItem>

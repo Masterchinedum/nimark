@@ -98,12 +98,17 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         resolver: zodResolver(formSchema),
         defaultValues: initialData 
             ? {
-                ...initialData,
+                name: initialData.name,
                 price: initialData.price,
                 stock: initialData.stock || 0,
                 description: initialData.description || '',
                 images: initialData.images || [],
+                categoryId: initialData.categoryId,
+                colorId: initialData.colorId,
+                sizeId: initialData.sizeId,
                 brandId: initialData.brandId || '',
+                isFeatured: initialData.isFeatured,
+                isArchived: initialData.isArchived,
                 properties: (initialData.properties as Record<string, string | string[]>) || {},
                 relatedProductIds: initialData.relatedTo?.map(product => product.id) || [],
         } : {
@@ -141,6 +146,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
+            console.log("Form data being submitted:", data);
             setLoading(true);
     
             let finalBrandId = data.brandId;
@@ -155,6 +161,8 @@ export const ProductForm: React.FC<ProductFromProps> = ({
                 images: images,
               };
     
+            console.log("Payload being sent:", payload);
+    
             if (initialData) {
                 await axios.patch(`/api/${params.storeId}/products/${params.productId}`, payload);
             } else {
@@ -164,11 +172,32 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             router.push(`/${params.storeId}/products`);
             toast.success(toastMessage)
         } catch(err) {
+            console.error("Form submission error:", err);
             toast.error("Something went wrong.");
         } finally {
             setLoading(false)
         }
     }
+
+    const onError = (errors: any) => {
+        console.error("Form validation errors:", errors);
+        console.log("Form values:", form.getValues());
+        console.log("Form state:", form.formState);
+        
+        // Show specific field errors
+        const errorFields = Object.keys(errors);
+        if (errorFields.length > 0) {
+            const errorMessages = errorFields.map(field => {
+                const message = errors[field]?.message || 'Invalid value';
+                return `${field}: ${message}`;
+            }).join(', ');
+            
+            toast.error(`Validation errors: ${errorMessages}`);
+            console.log("Detailed errors:", errorMessages);
+        } else {
+            toast.error("Please check all required fields.");
+        }
+    };
 
     const onDelete = async () => {
         try {
@@ -203,7 +232,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
             </div>
             <Separator />
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6 md:space-y-8 lg:space-y-10">
+                <form onSubmit={form.handleSubmit(onSubmit, onError)} className="w-full space-y-6 md:space-y-8 lg:space-y-10">
                     <ImageUploader 
                         images={images} 
                         setImages={setImages} 
