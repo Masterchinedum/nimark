@@ -1,67 +1,90 @@
-//nimark-admin/app/(dashboard)/[storeId]/(routes)/products/[productId]/page.tsx
+import { notFound } from 'next/navigation'
+import prismadb from '@/lib/prismadb'
+import { ProductForm } from './components/product-form'
 
-import { Suspense } from 'react';
-import prismadb from "@/lib/prismadb";
-import { ProductForm } from "./components/ProductForm";
-import LoadingSpinner from "@/components/ui/loading-spinner";
+interface ProductPageProps {
+  params: Promise<{
+    storeId: string
+    productId: string
+  }>
+}
 
-const ProductPage = async (props: { params: Promise<{ productId: string, storeId: string }> }) => {
-    const params = await props.params;
-    const product = await prismadb.product.findUnique({ 
-        where: {
-            id: params.productId
-        },
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { storeId, productId } = await params
+  
+  // Fetch product if editing
+  const product = productId !== 'new' 
+    ? await prismadb.product.findUnique({
+        where: { id: productId, storeId },
         include: {
-            images: true
+          images: {
+            orderBy: { createdAt: 'asc' }
+          },
+          relatedTo: {
+            select: { id: true, name: true }
+          }
         }
-    });
+      })
+    : null
 
-    const categories = await prismadb.category.findMany({
-        where: {
-            storeId: params.storeId
-        },
-    });
+  if (productId !== 'new' && !product) {
+    notFound()
+  }
 
-    const sizes = await prismadb.size.findMany({
-        where: {
-            storeId: params.storeId
-        },
-    });
+  // Fetch categories for the store
+  const categories = await prismadb.category.findMany({
+    where: { storeId },
+    orderBy: { name: 'asc' }
+  })
 
-    const colors = await prismadb.color.findMany({
-        where: {
-            storeId: params.storeId
-        },
-    });
+  // Fetch sizes for the store
+  const sizes = await prismadb.size.findMany({
+    where: { storeId },
+    orderBy: { name: 'asc' }
+  })
 
-    const brands = await prismadb.brand.findMany({
-        where: {
-            storeId: params.storeId
-        }
-    });
+  // Fetch colors for the store
+  const colors = await prismadb.color.findMany({
+    where: { storeId },
+    orderBy: { name: 'asc' }
+  })
 
-    // Convert Decimal and JSON types for Client Component compatibility
-    const serializedProduct = product ? {
-        ...product,
-        price: product.price.toNumber(),
-        properties: product.properties as Record<string, string | string[]> | null
-    } : null;
+  // Fetch brands for the store
+  const brands = await prismadb.brand.findMany({
+    where: { storeId },
+    orderBy: { name: 'asc' }
+  })
 
-    return (
-        <div className="flex-col">
-            <div className="flex-1 p-8 pt-6 space-y-4">
-                <Suspense fallback={<LoadingSpinner />}>
-                    <ProductForm
-                        initialData={serializedProduct}
-                        colors={colors}
-                        sizes={sizes}
-                        categories={categories}
-                        brands={brands}
-                    />
-                </Suspense>
-            </div>
-        </div>
-    );
-};
+  // Serialize product data for client component
+  const serializedProduct = product ? {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price.toNumber(),
+    stock: product.stock,
+    categoryId: product.categoryId,
+    sizeId: product.sizeId,
+    colorId: product.colorId,
+    brandId: product.brandId || '',
+    isFeatured: product.isFeatured,
+    isArchived: product.isArchived,
+    properties: product.properties as Record<string, string | string[]> | null,
+    images: product.images.map(img => ({ id: img.id, url: img.url })),
+    relatedProductIds: product.relatedTo?.map(p => p.id) || [],
+  } : null
 
-export default ProductPage;
+  return (
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <ProductForm
+          initialData={serializedProduct}
+          categories={categories}
+          sizes={sizes}
+          colors={colors}
+          brands={brands}
+          storeId={storeId}
+        />
+      </div>
+    </div>
+  )
+}

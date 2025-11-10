@@ -107,7 +107,7 @@ export async function createProduct(
       await prismadb.product.update({
         where: { id: product.id },
         data: {
-          relatedProducts: {
+          relatedTo: {
             connect: validatedData.relatedProductIds.map(id => ({ id }))
           }
         }
@@ -204,7 +204,7 @@ export async function updateProduct(
         images: {
           create: validatedData.images
         },
-        relatedProducts: {
+        relatedTo: {
           set: [],
           connect: validatedData.relatedProductIds?.map(id => ({ id })) || []
         }
