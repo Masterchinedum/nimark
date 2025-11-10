@@ -25,7 +25,9 @@ import RelatedProducts from './RelatedProducts';
 
 
 
-interface ExtendedPrismaProduct extends PrismaProduct {
+interface ExtendedPrismaProduct extends Omit<PrismaProduct, 'price' | 'properties'> {
+    price: number;
+    properties: Record<string, string | string[]> | null;
     relatedTo?: { id: string }[];
 }
 
@@ -97,14 +99,12 @@ export const ProductForm: React.FC<ProductFromProps> = ({
         defaultValues: initialData 
             ? {
                 ...initialData,
-                price: parseFloat(String(initialData?.price)),
-                stock: initialData?.stock || 0,
+                price: initialData.price,
+                stock: initialData.stock || 0,
                 description: initialData.description || '',
                 images: initialData.images || [],
                 brandId: initialData.brandId || '',
-                properties: initialData.properties 
-                    ? JSON.parse(initialData.properties as string) 
-                    : {},
+                properties: (initialData.properties as Record<string, string | string[]>) || {},
                 relatedProductIds: initialData.relatedTo?.map(product => product.id) || [],
         } : {
             name: '',

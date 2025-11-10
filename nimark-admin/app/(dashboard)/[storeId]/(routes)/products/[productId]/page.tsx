@@ -40,12 +40,19 @@ const ProductPage = async (props: { params: Promise<{ productId: string, storeId
         }
     });
 
+    // Convert Decimal and JSON types for Client Component compatibility
+    const serializedProduct = product ? {
+        ...product,
+        price: product.price.toNumber(),
+        properties: product.properties as Record<string, string | string[]> | null
+    } : null;
+
     return (
         <div className="flex-col">
             <div className="flex-1 p-8 pt-6 space-y-4">
                 <Suspense fallback={<LoadingSpinner />}>
                     <ProductForm
-                        initialData={product}
+                        initialData={serializedProduct}
                         colors={colors}
                         sizes={sizes}
                         categories={categories}
