@@ -3,9 +3,11 @@ import Container from '@/components/ui/container';
 import MainNav from '@/components/layout/main-nav';
 import NavbarActions from '@/components/layout/navbar-actions';
 import getCategories from '@/actions/get-categories';
+import { auth } from '@/auth';
 
 const Navbar = async () => {
   const categories = await getCategories();
+  const session = await auth();
 
   return (
     <div className="border-b">
@@ -15,7 +17,7 @@ const Navbar = async () => {
             <p className="text-xl font-bold">NIMARK</p>
           </Link>
           <MainNav data={categories} />
-          <NavbarActions />
+          <NavbarActions user={session?.user} />
         </div>
       </Container>
     </div>
