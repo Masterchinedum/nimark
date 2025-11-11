@@ -61,7 +61,7 @@ export default function SignInForm({ callbackUrl, error }: SignInFormProps) {
         router.push(callbackUrl || '/');
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       toast.error('Something went wrong');
     } finally {
       setIsLoading(false);
@@ -72,7 +72,7 @@ export default function SignInForm({ callbackUrl, error }: SignInFormProps) {
     setIsLoading(true);
     try {
       await signIn('google', { callbackUrl: callbackUrl || '/' });
-    } catch (error) {
+    } catch {
       toast.error('Error signing in with Google');
       setIsLoading(false);
     }

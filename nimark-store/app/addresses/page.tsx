@@ -56,7 +56,17 @@ export default async function AddressesPage() {
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {addresses.map((address) => (
+              {addresses.map((address: {
+                id: string;
+                name: string;
+                phone: string | null;
+                street: string;
+                city: string;
+                state: string;
+                postalCode: string;
+                country: string;
+                isDefault: boolean;
+              }) => (
                 <Card key={address.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">

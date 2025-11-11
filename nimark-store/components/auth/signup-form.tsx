@@ -66,7 +66,7 @@ export default function SignUpForm() {
         router.push('/welcome');
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       toast.error('Something went wrong');
     } finally {
       setIsLoading(false);
@@ -77,7 +77,7 @@ export default function SignUpForm() {
     setIsLoading(true);
     try {
       await signIn('google', { callbackUrl: '/welcome' });
-    } catch (error) {
+    } catch {
       toast.error('Error signing up with Google');
       setIsLoading(false);
     }

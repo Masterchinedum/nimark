@@ -63,7 +63,7 @@ export async function requireAuth() {
 /**
  * Check if user has permission
  */
-export async function hasPermission(_permission: string) {
+export async function hasPermission() {
   const user = await getCurrentUser();
   
   if (!user) return false;

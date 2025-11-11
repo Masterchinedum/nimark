@@ -67,6 +67,7 @@ export const sessionCache = {
   },
 
   // Set session in cache with TTL (30 days default)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async set(sessionToken: string, session: any, ttl: number = 60 * 60 * 24 * 30) {
     try {
       const client = getRedisClient();
@@ -141,7 +142,11 @@ export const rateLimiter = {
 
 // Cache utilities for general use
 export const cache = {
-  async get<T>(key: string): Promise<T | null> {
+  /**
+   * Get cached data
+   */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async get<T = any>(key: string): Promise<T | null> {
     try {
       const client = getRedisClient();
       const data = await client.get(key);
@@ -152,6 +157,7 @@ export const cache = {
     }
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async set(key: string, value: any, ttl?: number) {
     try {
       const client = getRedisClient();

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { Heart, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
 
 export default async function WishlistPage() {
   const user = await requireAuth();
@@ -57,15 +58,26 @@ export default async function WishlistPage() {
             </Card>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {wishlistItems.map((item) => (
+              {wishlistItems.map((item: {
+                id: string;
+                product: {
+                  id: string;
+                  name: string;
+                  price: number;
+                  images: string[];
+                  isArchived: boolean;
+                  brand: { name: string } | null;
+                };
+              }) => (
                 <Card key={item.id} className="group overflow-hidden">
-                  <div className="aspect-square overflow-hidden bg-gray-100">
+                  <div className="aspect-square overflow-hidden bg-gray-100 relative">
                     <Link href={`/product/${item.product.id}`}>
                       {item.product.images && item.product.images.length > 0 && (
-                        <img
+                        <Image
                           src={item.product.images[0]}
                           alt={item.product.name}
-                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          fill
+                          className="object-cover transition-transform group-hover:scale-105"
                         />
                       )}
                     </Link>

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { Package } from 'lucide-react';
+import Image from 'next/image';
 
 export default async function OrdersPage() {
   const user = await requireAuth();
@@ -73,7 +74,22 @@ export default async function OrdersPage() {
             </Card>
           ) : (
             <div className="space-y-6">
-              {orders.map((order) => (
+              {orders.map((order: {
+                id: string;
+                status: string;
+                createdAt: Date;
+                totalAmount: number;
+                isPaid: boolean;
+                orderItems: Array<{
+                  id: string;
+                  quantity: number;
+                  price: number;
+                  product: {
+                    name: string;
+                    images: string[];
+                  };
+                }>;
+              }) => (
                 <Card key={order.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
@@ -97,12 +113,13 @@ export default async function OrdersPage() {
                           key={item.id}
                           className="flex items-center space-x-4 border-b pb-4 last:border-0"
                         >
-                          <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100">
+                          <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100 relative">
                             {item.product.images && item.product.images.length > 0 && (
-                              <img
+                              <Image
                                 src={item.product.images[0]}
                                 alt={item.product.name}
-                                className="h-full w-full object-cover"
+                                fill
+                                className="object-cover"
                               />
                             )}
                           </div>
