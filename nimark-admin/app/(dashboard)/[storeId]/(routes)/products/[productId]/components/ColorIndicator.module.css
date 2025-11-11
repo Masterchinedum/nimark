@@ -1,0 +1,18 @@
+.colorIndicator {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  display: inline-block;
+  background-color: var(--indicator-color);
+}
+
+.colorIndicatorLarge {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  display: inline-block;
+  margin-right: 0.5rem;
+  background-color: var(--indicator-color);
+}

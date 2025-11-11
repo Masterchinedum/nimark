@@ -2,10 +2,10 @@ import React, { useCallback } from 'react';
 import { CldUploadWidget } from 'next-cloudinary';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { Trash, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import styles from './ImageUploader.module.css';
 
 interface ImageUploaderProps {
   images: { id: string; url: string }[];
@@ -26,29 +26,39 @@ const SortableImage: React.FC<SortableImageProps> = ({ image, index, removeImage
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id: image.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+  // Generate CSS class dynamically for transform
+  const transformId = `transform-${image.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+  const transformCSS = transform 
+    ? `.${transformId} { transform: translate3d(${transform.x}px, ${transform.y}px, 0); transition: ${transition}; }`
+    : '';
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="relative w-[200px] h-[200px]">
-      <Image
-        src={image.url}
-        alt="Product image"
-        fill
-        className="object-cover rounded-lg"
-      />
-      <Button
-        type="button"
-        onClick={() => removeImage(image.id)}
-        className="absolute top-2 right-2 bg-red-500 p-2 rounded-full"
+    <>
+      {transform && <style dangerouslySetInnerHTML={{ __html: transformCSS }} />}
+      <div 
+        ref={setNodeRef} 
+        {...attributes} 
+        {...listeners} 
+        className={`${styles.sortableImage} ${transformId} ${isDragging ? 'opacity-50' : 'opacity-100'} transition-opacity`}
       >
-        <Trash className="h-4 w-4" />
-      </Button>
-    </div>
+        <Image
+          src={image.url}
+          alt="Product image"
+          fill
+          className="object-cover rounded-lg"
+        />
+        <Button
+          type="button"
+          onClick={() => removeImage(image.id)}
+          className="absolute top-2 right-2 bg-red-500 p-2 rounded-full"
+        >
+          <Trash className="h-4 w-4" />
+        </Button>
+      </div>
+    </>
   );
 };
 

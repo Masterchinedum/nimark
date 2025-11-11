@@ -33,6 +33,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ColorSwatch } from './ColorSwatch'
 
 import { createProduct, updateProduct, deleteProduct } from '../../actions'
 import { useForm, SubmitHandler } from 'react-hook-form'
@@ -435,10 +436,7 @@ export function ProductForm({
                               {colors.map((color) => (
                                 <SelectItem key={color.id} value={color.id}>
                                   <div className="flex items-center gap-2">
-                                    <div
-                                      className="h-4 w-4 rounded-full border"
-                                      style={{ backgroundColor: color.value }}
-                                    />
+                                    <ColorSwatch color={color.value} name={color.name} size="sm" />
                                     {color.name}
                                   </div>
                                 </SelectItem>

@@ -80,3 +80,34 @@ body,
       @apply bg-background text-foreground;
     }
   }
+
+  /* Dynamic color indicator using data attributes */
+  @layer components {
+    [data-color-indicator] {
+      background-color: transparent;
+    }
+    
+    [data-color-indicator]::before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      background-color: var(--dynamic-color, transparent);
+    }
+    
+    /* Color swatches with data attributes */
+    .color-swatch {
+      @apply h-4 w-4 rounded-full border inline-block relative overflow-hidden;
+    }
+    
+    .color-swatch::after {
+      content: attr(data-color);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--swatch-color);
+    }
+  }

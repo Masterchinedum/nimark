@@ -1,0 +1,9 @@
+.sortableImage {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+
+.sortableImage[data-transform] {
+  will-change: transform;
+}

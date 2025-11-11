@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from "@/components/ui/textarea";
 import { Category, Color, Size, Brand } from "@prisma/client";
+import { ColorSwatch } from './ColorSwatch';
 
 interface ProductDetailsProps {
   form: any;
@@ -209,7 +210,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({
               <SelectContent>
                 {colors.map(color => (
                   <SelectItem className="flex items-center" key={color.id} value={color.id}>
-                    <span className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: color.value }}></span>
+                    <ColorSwatch color={color.value} name={color.name} size="md" />
                     <span>{color.name}</span>
                   </SelectItem>
                 ))}
