@@ -223,6 +223,12 @@ export async function updateProduct(
       }
     }
 
+    // Don't log NEXT_REDIRECT errors - they're intentional
+    if (error && typeof error === 'object' && 'digest' in error && 
+        typeof error.digest === 'string' && error.digest.includes('NEXT_REDIRECT')) {
+      throw error
+    }
+
     console.error('Update product error:', error)
     return {
       success: false,
