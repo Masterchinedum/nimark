@@ -4,7 +4,7 @@ import Container from '@/components/ui/container';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { Heart, ShoppingCart } from 'lucide-react';
 
 export default async function WishlistPage() {
@@ -38,7 +38,7 @@ export default async function WishlistPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight">My Wishlist</h1>
             <p className="mt-2 text-muted-foreground">
-              Items you've saved for later
+              Items you&apos;ve saved for later
             </p>
           </div>
 

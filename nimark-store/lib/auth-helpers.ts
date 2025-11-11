@@ -1,34 +1,69 @@
 import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+import prisma from '@/lib/prisma';
 
-// Get current session
+/**
+ * Get the current session
+ */
 export async function getSession() {
   return await auth();
 }
 
-// Get current user
+/**
+ * Get the current user with full database details
+ */
 export async function getCurrentUser() {
-  const session = await auth();
-  return session?.user;
+  const session = await getSession();
+  
+  if (!session?.user?.email) {
+    return null;
+  }
+
+  // Fetch full user details from database
+  const user = await prisma.user.findUnique({
+    where: {
+      email: session.user.email,
+    },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      image: true,
+      emailVerified: true,
+      role: true,
+      isActive: true,
+      isSuspended: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    ...user,
+    role: user.role as string | undefined,
+  };
 }
 
-// Require authentication (for server components/actions)
+/**
+ * Require authentication - returns user or null if not authenticated
+ */
 export async function requireAuth() {
-  const session = await auth();
+  const user = await getCurrentUser();
   
-  if (!session || !session.user) {
-    redirect('/auth/signin');
+  if (!user) {
+    return null;
   }
-  
-  if (session.user.isSuspended) {
-    redirect('/auth/suspended');
-  }
-  
-  return session.user;
+
+  return user;
 }
 
-// Check if user has permission
-export async function hasPermission(permission: string) {
+/**
+ * Check if user has permission
+ */
+export async function hasPermission(_permission: string) {
   const user = await getCurrentUser();
   
   if (!user) return false;

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { auth } from '@/auth';
+import type { NextAuthRequest } from 'next-auth';
 
 // Define protected routes that require authentication
 const protectedRoutes = [
@@ -18,7 +18,7 @@ const authRoutes = [
   '/auth/forgot-password',
 ];
 
-export default auth((req) => {
+export default auth((req: NextAuthRequest) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 

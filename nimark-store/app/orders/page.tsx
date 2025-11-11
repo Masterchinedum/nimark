@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { format } from 'date-fns';
 import { Package } from 'lucide-react';
 

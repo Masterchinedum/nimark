@@ -4,7 +4,7 @@ import Container from '@/components/ui/container';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { prisma } from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import { MapPin, Plus } from 'lucide-react';
 
 export default async function AddressesPage() {

@@ -2,7 +2,6 @@ import { requireAuth } from '@/lib/auth-helpers';
 import { redirect } from 'next/navigation';
 import Container from '@/components/ui/container';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { User, MapPin, ShoppingBag, Heart, Settings } from 'lucide-react';
 
