@@ -52,10 +52,10 @@ export default async function TestProductsPage({
   }
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'monospace' }}>
+    <div className="p-5 font-mono">
       <h1>Product API Test</h1>
       
-      <div style={{ marginBottom: '20px' }}>
+      <div className="mb-5">
         <p><strong>Store ID:</strong> {STORE_ID}</p>
         <p><strong>Admin API URL:</strong> {ADMIN_API_URL}</p>
       </div>
@@ -63,16 +63,10 @@ export default async function TestProductsPage({
       {productId ? (
         <div>
           <h2>Single Product (ID: {productId})</h2>
-          <pre style={{ 
-            background: '#f4f4f4', 
-            padding: '10px', 
-            borderRadius: '5px',
-            overflow: 'auto',
-            maxHeight: '80vh'
-          }}>
+          <pre className="bg-gray-100 p-2.5 rounded-md overflow-auto max-h-[80vh]">
             {JSON.stringify(singleProduct, null, 2)}
           </pre>
-          <a href="/test-products" style={{ color: 'blue', textDecoration: 'underline' }}>
+          <a href="/test-products" className="text-blue-600 underline">
             ← Back to all products
           </a>
         </div>
@@ -82,19 +76,13 @@ export default async function TestProductsPage({
           {products && Array.isArray(products) && (
             <p><strong>Total Products:</strong> {products.length}</p>
           )}
-          <pre style={{ 
-            background: '#f4f4f4', 
-            padding: '10px', 
-            borderRadius: '5px',
-            overflow: 'auto',
-            maxHeight: '80vh'
-          }}>
+          <pre className="bg-gray-100 p-2.5 rounded-md overflow-auto max-h-[80vh]">
             {JSON.stringify(products, null, 2)}
           </pre>
         </div>
       )}
 
-      <div style={{ marginTop: '20px', padding: '10px', background: '#e8f4f8' }}>
+      <div className="mt-5 p-2.5 bg-cyan-50">
         <h3>Test URLs:</h3>
         <ul>
           <li>All products: <code>/test-products</code></li>
