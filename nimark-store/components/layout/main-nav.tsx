@@ -1,47 +1,90 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Search, ChevronDown } from 'lucide-react';
 import { Category } from '@/types';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface MainNavProps {
   data: Category[];
 }
 
 const MainNav: React.FC<MainNavProps> = ({ data }) => {
-  const pathname = usePathname();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const routes = data.map((route) => ({
-    href: `/category/${route.id}`,
-    label: route.name,
-    active: pathname === `/category/${route.id}`,
-  }));
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      const params = new URLSearchParams();
+      params.set('q', searchQuery.trim());
+      if (selectedCategory !== 'All') {
+        params.set('category', selectedCategory);
+      }
+      router.push(`/search?${params.toString()}`);
+    }
+  };
 
   return (
-    <nav className="mx-6 flex items-center space-x-4 lg:space-x-6">
-      <Link
-        href="/"
-        className={cn(
-          'text-sm font-medium transition-colors hover:text-primary',
-          pathname === '/' ? 'text-primary' : 'text-muted-foreground'
-        )}
-      >
-        Home
-      </Link>
-      {routes.map((route) => (
-        <Link
-          key={route.href}
-          href={route.href}
-          className={cn(
-            'text-sm font-medium transition-colors hover:text-primary',
-            route.active ? 'text-primary' : 'text-muted-foreground'
-          )}
+    <form onSubmit={handleSearch} className="flex w-full items-stretch">
+      {/* Category Dropdown - Hidden on small mobile, visible on md+ */}
+      <div className="hidden md:flex">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              type="button"
+              variant="outline" 
+              className="h-10 rounded-r-none border-r-0 bg-muted/50 hover:bg-muted px-3 lg:px-4 gap-1 lg:gap-2 text-xs lg:text-sm font-medium shrink-0 min-w-[90px] lg:min-w-[120px]"
+            >
+              <span className="truncate max-w-[60px] lg:max-w-20">{selectedCategory}</span>
+              <ChevronDown className="h-3 w-3 lg:h-4 lg:w-4 shrink-0 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-[200px]">
+            <DropdownMenuItem onClick={() => setSelectedCategory('All')}>
+              <span className="font-medium">All Categories</span>
+            </DropdownMenuItem>
+            <div className="h-px bg-border my-1" />
+            {data.map((category) => (
+              <DropdownMenuItem
+                key={category.id}
+                onClick={() => setSelectedCategory(category.name)}
+              >
+                {category.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Search Input - Responsive */}
+      <div className="relative flex-1 min-w-0">
+        <Input
+          type="text"
+          placeholder="Search products..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="h-10 w-full pr-10 md:pr-12 md:rounded-l-none border-input focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary text-sm md:text-base placeholder:text-xs md:placeholder:text-sm"
+        />
+        <Button
+          type="submit"
+          size="icon"
+          className="absolute right-0 top-0 h-10 w-10 md:w-12 rounded-l-none hover:bg-primary/90"
         >
-          {route.label}
-        </Link>
-      ))}
-    </nav>
+          <Search className="h-4 w-4 md:h-5 md:w-5" />
+          <span className="sr-only">Search</span>
+        </Button>
+      </div>
+    </form>
   );
 };
 

@@ -4,10 +4,15 @@ const URL = `${process.env.NEXT_PUBLIC_API_URL}/${process.env.NEXT_PUBLIC_STORE_
 
 const getCategories = async (): Promise<Category[]> => {
   try {
-    const res = await fetch(URL, { cache: 'no-store' });
+    const res = await fetch(URL, {
+      next: {
+        revalidate: 3600, // Cache for 1 hour for better build performance
+      },
+    });
     
     if (!res.ok) {
-      throw new Error('Failed to fetch categories');
+      console.error(`Failed to fetch categories: ${res.status}`);
+      return [];
     }
 
     return res.json();

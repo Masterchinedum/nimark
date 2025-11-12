@@ -5,8 +5,8 @@
  * Never directly access admin database - use API endpoints
  */
 
-const ADMIN_API_URL = process.env.ADMIN_API_URL || 'http://localhost:3001';
-const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
+const ADMIN_API_URL = process.env.ADMIN_API_URL || process.env.NEXT_PUBLIC_ADMIN_API_URL || 'http://localhost:3001';
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || process.env.NEXT_PUBLIC_ADMIN_API_KEY;
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>;
