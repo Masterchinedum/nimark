@@ -22,11 +22,8 @@ export default async function OrdersPage() {
       userId: user.id,
     },
     include: {
-      orderItems: {
-        include: {
-          product: true,
-        },
-      },
+      items: true,
+      address: true,
     },
     orderBy: {
       createdAt: 'desc',
@@ -34,15 +31,19 @@ export default async function OrdersPage() {
   });
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
+    const statusUpper = status.toUpperCase();
+    switch (statusUpper) {
+      case 'DELIVERED':
         return 'bg-green-100 text-green-800';
-      case 'processing':
+      case 'PROCESSING':
+      case 'CONFIRMED':
         return 'bg-blue-100 text-blue-800';
-      case 'shipped':
+      case 'SHIPPED':
         return 'bg-purple-100 text-purple-800';
-      case 'cancelled':
+      case 'CANCELLED':
+      case 'REFUNDED':
         return 'bg-red-100 text-red-800';
+      case 'PENDING':
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -74,28 +75,13 @@ export default async function OrdersPage() {
             </Card>
           ) : (
             <div className="space-y-6">
-              {orders.map((order: {
-                id: string;
-                status: string;
-                createdAt: Date;
-                totalAmount: number;
-                isPaid: boolean;
-                orderItems: Array<{
-                  id: string;
-                  quantity: number;
-                  price: number;
-                  product: {
-                    name: string;
-                    images: string[];
-                  };
-                }>;
-              }) => (
+              {orders.map((order) => (
                 <Card key={order.id}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
                         <CardTitle className="text-lg">
-                          Order #{order.id.slice(0, 8).toUpperCase()}
+                          Order #{order.orderNumber}
                         </CardTitle>
                         <CardDescription>
                           Placed on {format(new Date(order.createdAt), 'MMMM d, yyyy')}
@@ -108,30 +94,40 @@ export default async function OrdersPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {order.orderItems.map((item) => (
+                      {order.items.map((item) => (
                         <div
                           key={item.id}
                           className="flex items-center space-x-4 border-b pb-4 last:border-0"
                         >
                           <div className="h-16 w-16 overflow-hidden rounded-md bg-gray-100 relative">
-                            {item.product.images && item.product.images.length > 0 && (
+                            {item.productImage && (
                               <Image
-                                src={item.product.images[0]}
-                                alt={item.product.name}
+                                src={item.productImage}
+                                alt={item.productName}
                                 fill
                                 className="object-cover"
                               />
                             )}
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium">{item.product.name}</p>
+                            <p className="font-medium">{item.productName}</p>
                             <p className="text-sm text-muted-foreground">
                               Quantity: {item.quantity}
                             </p>
+                            {item.size && (
+                              <p className="text-sm text-muted-foreground">
+                                Size: {item.size}
+                              </p>
+                            )}
+                            {item.color && (
+                              <p className="text-sm text-muted-foreground">
+                                Color: {item.color}
+                              </p>
+                            )}
                           </div>
                           <div className="text-right">
                             <p className="font-semibold">
-                              ${item.price.toFixed(2)}
+                              ${Number(item.price).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -140,11 +136,11 @@ export default async function OrdersPage() {
                       <div className="flex items-center justify-between border-t pt-4">
                         <p className="font-semibold">Total</p>
                         <p className="text-lg font-bold">
-                          ${order.totalAmount.toFixed(2)}
+                          ${Number(order.total).toFixed(2)}
                         </p>
                       </div>
 
-                      {order.isPaid && (
+                      {order.paymentStatus === 'PAID' && (
                         <Badge variant="outline" className="mt-2">
                           Paid on {format(new Date(order.createdAt), 'MMM d, yyyy')}
                         </Badge>

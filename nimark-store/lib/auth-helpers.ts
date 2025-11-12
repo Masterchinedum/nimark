@@ -29,7 +29,6 @@ export async function getCurrentUser() {
       name: true,
       image: true,
       emailVerified: true,
-      role: true,
       isActive: true,
       isSuspended: true,
       createdAt: true,
@@ -41,10 +40,7 @@ export async function getCurrentUser() {
     return null;
   }
 
-  return {
-    ...user,
-    role: user.role as string | undefined,
-  };
+  return user;
 }
 
 /**

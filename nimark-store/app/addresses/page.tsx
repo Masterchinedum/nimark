@@ -56,21 +56,11 @@ export default async function AddressesPage() {
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {addresses.map((address: {
-                id: string;
-                name: string;
-                phone: string | null;
-                street: string;
-                city: string;
-                state: string;
-                postalCode: string;
-                country: string;
-                isDefault: boolean;
-              }) => (
+              {addresses.map((address) => (
                 <Card key={address.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <CardTitle className="text-lg">{address.name}</CardTitle>
+                      <CardTitle className="text-lg">{address.fullName}</CardTitle>
                       {address.isDefault && (
                         <Badge variant="secondary">Default</Badge>
                       )}
@@ -81,7 +71,8 @@ export default async function AddressesPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2 text-sm text-muted-foreground">
-                      <p>{address.street}</p>
+                      <p>{address.addressLine1}</p>
+                      {address.addressLine2 && <p>{address.addressLine2}</p>}
                       <p>
                         {address.city}, {address.state} {address.postalCode}
                       </p>

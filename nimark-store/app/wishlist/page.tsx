@@ -7,6 +7,7 @@ import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import { Heart, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
+import { adminProductApi } from '@/lib/admin-api';
 
 export default async function WishlistPage() {
   const user = await requireAuth();
@@ -19,18 +20,32 @@ export default async function WishlistPage() {
     where: {
       userId: user.id,
     },
-    include: {
-      product: {
-        include: {
-          category: true,
-          brand: true,
-        },
-      },
-    },
     orderBy: {
-      addedAt: 'desc',
+      createdAt: 'desc',
     },
   });
+
+  // Fetch product details from admin API
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let products: any[] = [];
+  try {
+    if (wishlistItems.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      products = (await adminProductApi.getProducts()) as any[];
+    }
+  } catch (error) {
+    console.error('Failed to fetch products:', error);
+  }
+  
+  // Match products with wishlist items
+  const wishlistWithProducts = wishlistItems.map(item => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const product = products.find((p: any) => p.id === item.productId);
+    return {
+      ...item,
+      product: product || null,
+    };
+  }).filter(item => item.product !== null); // Filter out items where product no longer exists
 
   return (
     <div className="bg-white">
@@ -43,7 +58,7 @@ export default async function WishlistPage() {
             </p>
           </div>
 
-          {wishlistItems.length === 0 ? (
+          {wishlistWithProducts.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Heart className="h-16 w-16 text-muted-foreground/50" />
@@ -58,24 +73,14 @@ export default async function WishlistPage() {
             </Card>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {wishlistItems.map((item: {
-                id: string;
-                product: {
-                  id: string;
-                  name: string;
-                  price: number;
-                  images: string[];
-                  isArchived: boolean;
-                  brand: { name: string } | null;
-                };
-              }) => (
+              {wishlistWithProducts.map((item) => (
                 <Card key={item.id} className="group overflow-hidden">
                   <div className="aspect-square overflow-hidden bg-gray-100 relative">
-                    <Link href={`/product/${item.product.id}`}>
-                      {item.product.images && item.product.images.length > 0 && (
+                    <Link href={`/product/${item.product!.id}`}>
+                      {item.product!.images && item.product!.images.length > 0 && (
                         <Image
-                          src={item.product.images[0]}
-                          alt={item.product.name}
+                          src={item.product!.images[0]}
+                          alt={item.product!.name}
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
                         />
@@ -83,29 +88,29 @@ export default async function WishlistPage() {
                     </Link>
                   </div>
                   <CardContent className="p-4">
-                    <Link href={`/product/${item.product.id}`}>
+                    <Link href={`/product/${item.product!.id}`}>
                       <h3 className="font-semibold hover:underline">
-                        {item.product.name}
+                        {item.product!.name}
                       </h3>
                     </Link>
-                    {item.product.brand && (
+                    {item.product!.brand && (
                       <p className="mt-1 text-sm text-muted-foreground">
-                        {item.product.brand.name}
+                        {item.product!.brand.name}
                       </p>
                     )}
                     <div className="mt-3 flex items-center justify-between">
                       <div>
                         <p className="text-lg font-bold">
-                          ${item.product.price.toFixed(2)}
+                          ${item.product!.price.toFixed(2)}
                         </p>
                       </div>
-                      {item.product.isArchived ? (
+                      {item.product!.isArchived ? (
                         <Button size="sm" disabled>
                           Out of Stock
                         </Button>
                       ) : (
                         <Button size="sm" asChild>
-                          <Link href={`/product/${item.product.id}`}>
+                          <Link href={`/product/${item.product!.id}`}>
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             View
                           </Link>
