@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, Menu } from 'lucide-react';
 import { Category } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -36,49 +36,53 @@ const MainNav: React.FC<MainNavProps> = ({ data }) => {
 
   return (
     <form onSubmit={handleSearch} className="flex w-full items-stretch">
-      {/* Category Dropdown - Hidden on small mobile, visible on md+ */}
-      <div className="hidden md:flex">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              type="button"
-              variant="outline" 
-              className="h-10 rounded-r-none border-r-0 bg-muted/50 hover:bg-muted px-3 lg:px-4 gap-1 lg:gap-2 text-xs lg:text-sm font-medium shrink-0 min-w-[90px] lg:min-w-[120px]"
-            >
+      {/* Category Dropdown - Always visible, changes appearance on mobile */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            type="button"
+            variant="outline" 
+            className="h-10 rounded-r-none border-r-0 bg-muted/50 hover:bg-muted shrink-0"
+          >
+            {/* Mobile: Hamburger menu icon */}
+            <Menu className="h-4 w-4 md:hidden" />
+            {/* Desktop: Category text with dropdown */}
+            <span className="hidden md:flex items-center gap-1 lg:gap-2 text-xs lg:text-sm font-medium">
               <span className="truncate max-w-[60px] lg:max-w-20">{selectedCategory}</span>
               <ChevronDown className="h-3 w-3 lg:h-4 lg:w-4 shrink-0 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-[200px]">
-            <DropdownMenuItem onClick={() => setSelectedCategory('All')}>
-              <span className="font-medium">All Categories</span>
+            </span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-[200px] md:w-[220px]">
+          <DropdownMenuItem onClick={() => setSelectedCategory('All')}>
+            <span className="font-medium">All Categories</span>
+          </DropdownMenuItem>
+          <div className="h-px bg-border my-1" />
+          {data.map((category) => (
+            <DropdownMenuItem
+              key={category.id}
+              onClick={() => setSelectedCategory(category.name)}
+              className={selectedCategory === category.name ? 'bg-accent' : ''}
+            >
+              {category.name}
             </DropdownMenuItem>
-            <div className="h-px bg-border my-1" />
-            {data.map((category) => (
-              <DropdownMenuItem
-                key={category.id}
-                onClick={() => setSelectedCategory(category.name)}
-              >
-                {category.name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {/* Search Input - Responsive */}
+      {/* Search Input - Full width, responsive padding */}
       <div className="relative flex-1 min-w-0">
         <Input
           type="text"
           placeholder="Search products..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-10 w-full pr-10 md:pr-12 md:rounded-l-none border-input focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary text-sm md:text-base placeholder:text-xs md:placeholder:text-sm"
+          className="h-10 w-full pr-10 md:pr-12 rounded-l-none border-input focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:border-purple-500 text-sm md:text-base placeholder:text-xs md:placeholder:text-sm"
         />
         <Button
           type="submit"
           size="icon"
-          className="absolute right-0 top-0 h-10 w-10 md:w-12 rounded-l-none hover:bg-primary/90"
+          className="absolute right-0 top-0 h-10 w-10 md:w-12 rounded-l-none bg-purple-600 hover:bg-purple-700 transition-colors"
         >
           <Search className="h-4 w-4 md:h-5 md:w-5" />
           <span className="sr-only">Search</span>

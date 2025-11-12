@@ -21,9 +21,10 @@ interface UserButtonProps {
     email?: string | null;
     image?: string | null;
   };
+  variant?: 'light' | 'default';
 }
 
-export default function UserButton({ user }: UserButtonProps) {
+export default function UserButton({ user, variant = 'default' }: UserButtonProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -56,7 +57,13 @@ export default function UserButton({ user }: UserButtonProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative rounded-full">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className={`relative rounded-full ${
+            variant === 'light' ? 'hover:bg-primary-foreground/10' : ''
+          }`}
+        >
           <Avatar className="h-8 w-8">
             <AvatarImage src={user.image || undefined} alt={user.name || ''} />
             <AvatarFallback>{initials}</AvatarFallback>
