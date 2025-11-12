@@ -38,7 +38,7 @@ export const OrderConfirmationEmail = ({
           processing your order shortly.
         </Text>
         <Section style={orderBox}>
-          <Text style={orderNumber}>Order #{orderNumber}</Text>
+          <Text style={orderNumberStyle}>Order #{orderNumber}</Text>
         </Section>
         <Hr style={hr} />
         <Text style={sectionTitle}>Order Summary</Text>
@@ -113,7 +113,7 @@ const orderBox = {
   textAlign: 'center' as const,
 };
 
-const orderNumber = {
+const orderNumberStyle = {
   color: '#000',
   fontSize: '18px',
   fontWeight: 'bold',

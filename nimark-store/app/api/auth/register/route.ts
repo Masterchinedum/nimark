@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 import { rateLimiter } from '@/lib/redis';
+import { sendVerificationEmail, sendWelcomeEmail, generateToken } from '@/lib/email';
 
 export async function POST(req: Request) {
   try {
@@ -69,8 +70,33 @@ export async function POST(req: Request) {
     // Reset rate limit on successful registration
     await rateLimiter.reset(`register:${email}`);
 
+    // Generate verification token
+    const token = generateToken();
+    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Save verification token
+    await prisma.verificationToken.create({
+      data: {
+        identifier: email,
+        token,
+        expires,
+        type: 'email',
+      },
+    });
+
+    // Send verification email (async, don't wait)
+    sendVerificationEmail(email, token).catch((error) => {
+      console.error('Failed to send verification email:', error);
+    });
+
+    // Send welcome email (async, don't wait)
+    sendWelcomeEmail(email, name).catch((error) => {
+      console.error('Failed to send welcome email:', error);
+    });
+
     return NextResponse.json(
       {
+        message: 'User registered successfully. Please check your email to verify your account.',
         user: {
           id: user.id,
           name: user.name,

@@ -57,19 +57,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Invalid credentials');
+          throw new Error('Email and password required');
         }
 
         const email = credentials.email as string;
         const password = credentials.password as string;
 
-        // Rate limiting - 5 attempts per 15 minutes
+        // Rate limiting - 5 login attempts per 15 minutes
         const isAllowed = await rateLimiter.check(`login:${email}`, 5, 900);
         if (!isAllowed) {
           throw new Error('Too many login attempts. Please try again later.');
         }
 
-        // Find user
         const user = await prisma.user.findUnique({
           where: { email },
         });
@@ -79,36 +78,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Check if account is suspended
-        if (user.isSuspended) {
-          throw new Error(
-            `Account suspended${user.suspendedReason ? `: ${user.suspendedReason}` : ''}`
-          );
+        if (!user.isActive) {
+          throw new Error('Account is suspended. Please contact support.');
         }
 
-        // Verify password
+        // Check if email is verified (optional - uncomment to enforce)
+        // if (!user.emailVerified) {
+        //   throw new Error('Please verify your email address before signing in.');
+        // }
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if (!isPasswordValid) {
           throw new Error('Invalid credentials');
         }
 
-        // Update last login
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { lastLoginAt: new Date() },
-        });
-
         // Reset rate limit on successful login
         await rateLimiter.reset(`login:${email}`);
 
         return {
           id: user.id,
-          email: user.email,
           name: user.name,
+          email: user.email,
           image: user.image,
           isActive: user.isActive,
           isSuspended: user.isSuspended,
-          suspendedReason: user.suspendedReason,
         };
       },
     }),

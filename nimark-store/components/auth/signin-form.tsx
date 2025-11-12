@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -139,7 +140,16 @@ export default function SignInForm({ callbackUrl, error }: SignInFormProps) {
           </div>
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+          <div className="text-sm text-center">
+            <Link
+              href="/auth/forgot-password"
+              className="font-medium text-primary hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Sign In
         </Button>
