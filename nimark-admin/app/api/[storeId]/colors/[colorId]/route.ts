@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { requireAuth } from "@/lib/auth-helpers";
+import { requireAdmin, assertStoreAccess } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request, props: { params: Promise<{ colorId: string }>}) {
@@ -28,15 +28,11 @@ export async function PATCH(
 ) {
     const params = await props.params;
     try {
-        const { userId, error } = await requireAuth();
+        const { userId, role, error } = await requireAdmin();
         if (error) return error;
         const body = await req.json();
 
         const { name, value } = body;
-
-        if (!userId!) {
-            return new NextResponse("Unauthenticated", { status: 401 })
-        }
 
         if (!name) {
             return new NextResponse("Name is required", { status: 400 });
@@ -50,16 +46,8 @@ export async function PATCH(
             return new NextResponse("Color id is required", { status: 400 });
         }
 
-        const storeByUserId = await prismadb.store.findFirst({
-            where: {
-                id: params.storeId,
-                userId: userId!
-            }
-        })
-
-        if (!storeByUserId) {
-            return new NextResponse("Unauthorized", { status: 403 });
-        }
+        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
+        if (accessError) return accessError;
 
         const color = await prismadb.color.updateMany({
             where: {
@@ -86,27 +74,15 @@ export async function DELETE(
 ) {
     const params = await props.params;
     try {
-        const { userId, error } = await requireAuth();
+        const { userId, role, error } = await requireAdmin();
         if (error) return error;
-
-        if (!userId!) {
-            return new NextResponse("Unauthenticated", { status: 401 })
-        }
 
         if(!params.colorId) {
             return new NextResponse("Color id is required", { status: 400 });
         }
 
-        const storeByUserId = await prismadb.store.findFirst({
-            where: {
-                id: params.storeId,
-                userId: userId!
-            }
-        })
-
-        if (!storeByUserId) {
-            return new NextResponse("Unauthorized", { status: 403 });
-        }
+        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
+        if (accessError) return accessError;
 
         const color = await prismadb.color.deleteMany({
             where: {

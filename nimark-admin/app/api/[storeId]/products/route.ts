@@ -1,7 +1,7 @@
 //nimark-admin/app/api/[storeId]/products/route.ts
 
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-helpers";
+import { requireVendorOrAdmin, assertStoreAccess } from "@/lib/auth-helpers";
 import prismadb from "@/lib/prismadb";
 import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 
@@ -9,7 +9,7 @@ import { getOrCreateDefaultBrand } from "@/lib/utils/brand";
 export async function POST(req: Request, props: { params: Promise<{ storeId: string }> }) {
     const params = await props.params;
     try {
-        const { userId, error } = await requireAuth();
+        const { userId, role, error } = await requireVendorOrAdmin();
         if (error) return error;
         const body = await req.json();
 
@@ -73,16 +73,8 @@ export async function POST(req: Request, props: { params: Promise<{ storeId: str
         finalBrandId = defaultBrand.id;
         }
 
-        const storeByUserId = await prismadb.store.findFirst({
-            where: {
-                id: params.storeId,
-                userId: userId!
-            }
-        });
-
-        if (!storeByUserId) {
-            return new NextResponse("Unauthorized", { status: 403 });
-        }
+        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
+        if (accessError) return accessError;
 
         const product = await prismadb.product.create({
             data: {

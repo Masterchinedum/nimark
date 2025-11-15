@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth-helpers";
+import { requireAdmin, assertStoreAccess } from "@/lib/auth-helpers";
 import prismadb from "@/lib/prismadb";
 
 export async function POST(req: Request, props: { params: Promise<{ storeId: string }> }) {
     const params = await props.params;
     try {
-        const { userId, error } = await requireAuth();
+        const { userId, role, error } = await requireAdmin();
         if (error) return error;
         const body = await req.json();
 
@@ -25,16 +25,8 @@ export async function POST(req: Request, props: { params: Promise<{ storeId: str
             return new NextResponse("Store Id is required", { status: 400});
         }
 
-        const storeByUserId = await prismadb.store.findFirst({
-            where: {
-                id: params.storeId,
-                userId: userId!
-            }
-        })
-
-        if (!storeByUserId) {
-            return new NextResponse("Unauthorized", { status: 403 });
-        }
+        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
+        if (accessError) return accessError;
 
         const size = await prismadb.size.create({
             data : {

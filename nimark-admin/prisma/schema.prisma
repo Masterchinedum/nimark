@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  VENDOR
+}
+
 // Auth.js / NextAuth models
 model User {
   id            String    @id @default(uuid())
@@ -15,6 +20,7 @@ model User {
   emailVerified DateTime?
   image         String?
   hashedPassword String?
+  role          Role      @default(VENDOR)
   accounts      Account[]
   sessions      Session[]
   stores        Store[]
