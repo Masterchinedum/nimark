@@ -14,11 +14,11 @@ export function MainNav({ className, userRole, ...props }: MainNavProps) {
     const pathname = usePathname()
     const params = useParams()
 
-    // Admin-only routes
-    const adminRoutes = userRole === "ADMIN" ? [
+    // Platform Management (Admin Only)
+    const platformRoutes = userRole === "ADMIN" ? [
         {
             href: `/admin`,
-            label: 'Admin Dashboard',
+            label: 'Platform',
             active: pathname === `/admin`
         },
         {
@@ -28,56 +28,65 @@ export function MainNav({ className, userRole, ...props }: MainNavProps) {
         },
         {
             href: `/admin/stores`,
-            label: 'All Stores',
+            label: 'Vendors',
             active: pathname === `/admin/stores`
         },
     ] : []
 
-    // Vendor routes (also available to admins when viewing a specific store)
-    const storeRoutes = params.storeId ? [{
-        href: `/${params.storeId}`,
-        label: 'Overview',
-        active: pathname === `/${params.storeId}`
-    }, {
-        href: `/${params.storeId}/billboards`,
-        label: 'Billboards',
-        active: pathname === `/${params.storeId}/billboards`,
-        adminOnly: true
-    }, {
-        href: `/${params.storeId}/categories`,
-        label: 'Categories',
-        active: pathname === `/${params.storeId}/categories`,
-        adminOnly: true
-    },{
-        href: `/${params.storeId}/brands`,
-        label: 'Brands',
-        active: pathname === `/${params.storeId}/brands`,
-        adminOnly: true
-    }, {
-        href: `/${params.storeId}/sizes`,
-        label: 'Sizes',
-        active: pathname === `/${params.storeId}/sizes`,
-        adminOnly: true
-    }, {
-        href: `/${params.storeId}/colors`,
-        label: 'Colors',
-        active: pathname === `/${params.storeId}/colors`,
-        adminOnly: true
-    }, {
-        href: `/${params.storeId}/products`,
-        label: 'Products',
-        active: pathname === `/${params.storeId}/products`
-    }, {
-        href: `/${params.storeId}/orders`,
-        label: 'Orders',
-        active: pathname === `/${params.storeId}/orders`
-    }, {
-        href: `/${params.storeId}/settings`,
-        label: 'Settings',
-        active: pathname === `/${params.storeId}/settings`
-    }].filter(route => !route.adminOnly || userRole === "ADMIN") : []
+    // Catalog Management (Admin Only - Global)
+    const catalogRoutes = userRole === "ADMIN" && params.storeId ? [
+        {
+            href: `/${params.storeId}/billboards`,
+            label: 'Billboards',
+            active: pathname === `/${params.storeId}/billboards`
+        },
+        {
+            href: `/${params.storeId}/categories`,
+            label: 'Categories',
+            active: pathname === `/${params.storeId}/categories`
+        },
+        {
+            href: `/${params.storeId}/brands`,
+            label: 'Brands',
+            active: pathname === `/${params.storeId}/brands`
+        },
+        {
+            href: `/${params.storeId}/sizes`,
+            label: 'Sizes',
+            active: pathname === `/${params.storeId}/sizes`
+        },
+        {
+            href: `/${params.storeId}/colors`,
+            label: 'Colors',
+            active: pathname === `/${params.storeId}/colors`
+        },
+    ] : []
 
-    const routes = [...adminRoutes, ...storeRoutes]
+    // Store Operations (Vendors & Admins)
+    const storeRoutes = params.storeId ? [
+        {
+            href: `/${params.storeId}`,
+            label: 'Dashboard',
+            active: pathname === `/${params.storeId}`
+        },
+        {
+            href: `/${params.storeId}/products`,
+            label: 'Products',
+            active: pathname === `/${params.storeId}/products`
+        },
+        {
+            href: `/${params.storeId}/orders`,
+            label: 'Orders',
+            active: pathname === `/${params.storeId}/orders`
+        },
+        {
+            href: `/${params.storeId}/settings`,
+            label: 'Settings',
+            active: pathname === `/${params.storeId}/settings`
+        },
+    ] : []
+
+    const routes = [...platformRoutes, ...catalogRoutes, ...storeRoutes]
 
     return (
         <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)} {...props}>

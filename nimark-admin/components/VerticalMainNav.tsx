@@ -9,88 +9,132 @@ interface VerticalMainNavProps extends React.HTMLAttributes<HTMLElement> {
     userRole?: string
 }
 
+interface NavSection {
+    title: string
+    routes: Array<{
+        href: string
+        label: string
+        active: boolean
+    }>
+}
+
 export function VerticalMainNav({ className, userRole, ...props }: VerticalMainNavProps) {
     const pathname = usePathname()
     const params = useParams()
 
-    // Admin-only routes
-    const adminRoutes = userRole === "ADMIN" ? [
-        {
-            href: `/admin`,
-            label: 'Admin Dashboard',
-            active: pathname === `/admin`
-        },
-        {
-            href: `/admin/users`,
-            label: 'Users',
-            active: pathname === `/admin/users`
-        },
-        {
-            href: `/admin/stores`,
-            label: 'All Stores',
-            active: pathname === `/admin/stores`
-        },
-    ] : []
+    const sections: NavSection[] = []
 
-    // Vendor routes (also available to admins when viewing a specific store)
-    const storeRoutes = params.storeId ? [{
-          href: `/${params.storeId}`,
-          label: 'Overview',
-          active: pathname === `/${params.storeId}`
-      }, {
-          href: `/${params.storeId}/billboards`,
-          label: 'Billboards',
-          active: pathname === `/${params.storeId}/billboards`,
-          adminOnly: true
-      }, {
-          href: `/${params.storeId}/categories`,
-          label: 'Categories',
-          active: pathname === `/${params.storeId}/categories`,
-          adminOnly: true
-      },{
-          href: `/${params.storeId}/brands`,
-          label: 'Brands',
-          active: pathname === `/${params.storeId}/brands`,
-          adminOnly: true
-      }, {
-          href: `/${params.storeId}/sizes`,
-          label: 'Sizes',
-          active: pathname === `/${params.storeId}/sizes`,
-          adminOnly: true
-      }, {
-          href: `/${params.storeId}/colors`,
-          label: 'Colors',
-          active: pathname === `/${params.storeId}/colors`,
-          adminOnly: true
-      }, {
-          href: `/${params.storeId}/products`,
-          label: 'Products',
-          active: pathname === `/${params.storeId}/products`
-      }, {
-          href: `/${params.storeId}/orders`,
-          label: 'Orders',
-          active: pathname === `/${params.storeId}/orders`
-      }, {
-          href: `/${params.storeId}/settings`,
-          label: 'Settings',
-          active: pathname === `/${params.storeId}/settings`
-      }].filter(route => !route.adminOnly || userRole === "ADMIN") : []
+    // Platform Management (Admin Only)
+    if (userRole === "ADMIN") {
+        sections.push({
+            title: "Platform Management",
+            routes: [
+                {
+                    href: `/admin`,
+                    label: 'Platform Overview',
+                    active: pathname === `/admin`
+                },
+                {
+                    href: `/admin/users`,
+                    label: 'User Management',
+                    active: pathname === `/admin/users`
+                },
+                {
+                    href: `/admin/stores`,
+                    label: 'Vendor Management',
+                    active: pathname === `/admin/stores`
+                },
+            ]
+        })
+    }
 
-    const routes = [...adminRoutes, ...storeRoutes]
+    // Catalog Management (Admin Only - Global)
+    if (userRole === "ADMIN" && params.storeId) {
+        sections.push({
+            title: "Catalog Management",
+            routes: [
+                {
+                    href: `/${params.storeId}/billboards`,
+                    label: 'Billboards',
+                    active: pathname === `/${params.storeId}/billboards`
+                },
+                {
+                    href: `/${params.storeId}/categories`,
+                    label: 'Categories',
+                    active: pathname === `/${params.storeId}/categories`
+                },
+                {
+                    href: `/${params.storeId}/brands`,
+                    label: 'Brands',
+                    active: pathname === `/${params.storeId}/brands`
+                },
+                {
+                    href: `/${params.storeId}/sizes`,
+                    label: 'Sizes',
+                    active: pathname === `/${params.storeId}/sizes`
+                },
+                {
+                    href: `/${params.storeId}/colors`,
+                    label: 'Colors',
+                    active: pathname === `/${params.storeId}/colors`
+                },
+            ]
+        })
+    }
+
+    // Store Operations (Vendors & Admins)
+    if (params.storeId) {
+        sections.push({
+            title: userRole === "ADMIN" ? "Store Operations" : "Store Management",
+            routes: [
+                {
+                    href: `/${params.storeId}`,
+                    label: 'Dashboard',
+                    active: pathname === `/${params.storeId}`
+                },
+                {
+                    href: `/${params.storeId}/products`,
+                    label: 'Products',
+                    active: pathname === `/${params.storeId}/products`
+                },
+                {
+                    href: `/${params.storeId}/orders`,
+                    label: 'Orders',
+                    active: pathname === `/${params.storeId}/orders`
+                },
+                {
+                    href: `/${params.storeId}/settings`,
+                    label: 'Store Settings',
+                    active: pathname === `/${params.storeId}/settings`
+                },
+            ]
+        })
+    }
 
     return (
-        <nav className={cn("flex flex-col space-y-3 w-full", className)} {...props}>
-            {routes.map((route, index) => (
-                <Link
-                    key={index}
-                    href={route.href}
-                    className={cn(
-                        "text-sm font-medium transition-colors w-full block",
-                        route.active ? "text-black dark:text-white" : "text-muted-foreground"
-                    )}
-                >
-                    {route.label}
-                </Link>
+        <nav className={cn("flex flex-col space-y-6 w-full", className)} {...props}>
+            {sections.map((section, sectionIndex) => (
+                <div key={sectionIndex} className="space-y-3">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3">
+                        {section.title}
+                    </h3>
+                    <div className="space-y-1">
+                        {section.routes.map((route, routeIndex) => (
+                            <Link
+                                key={routeIndex}
+                                href={route.href}
+                                className={cn(
+                                    "text-sm font-medium transition-colors w-full block px-3 py-2 rounded-md",
+                                    route.active 
+                                        ? "bg-secondary text-black dark:text-white" 
+                                        : "text-muted-foreground hover:bg-secondary/50"
+                                )}
+                            >
+                                {route.label}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
             ))}
         </nav>
     )
