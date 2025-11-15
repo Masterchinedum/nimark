@@ -13,6 +13,23 @@ export default async function SetupLayout ({
         redirect( '/sign-in');
     }
 
+    // Admins should be redirected to admin dashboard if they have no stores
+    if (session.user.role === "ADMIN") {
+        const store = await prismadb.store.findFirst({
+            where: {
+                userId: session.user.id
+            }
+        });
+
+        if (store) {
+            redirect(`/${store.id}`);
+        } else {
+            // Admin with no store goes to admin dashboard
+            redirect('/admin');
+        }
+    }
+
+    // Vendors must have a store
     const store = await prismadb.store.findFirst({
         where: {
             userId: session.user.id

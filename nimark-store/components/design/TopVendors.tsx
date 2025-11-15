@@ -95,7 +95,7 @@ export function TopVendors() {
             >
               <Card className="p-6 hover:shadow-lg transition-all duration-300 border-border hover:border-secondary/50">
                 <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-secondary/20 to-primary/20 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+                  <div className="w-16 h-16 bg-linear-to-br from-secondary/20 to-primary/20 rounded-2xl flex items-center justify-center text-3xl shrink-0">
                     {vendor.logo}
                   </div>
                   
@@ -103,7 +103,7 @@ export function TopVendors() {
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-bold text-lg truncate">{vendor.name}</h3>
                       {vendor.verified && (
-                        <CheckCircle size={18} weight="fill" className="text-success flex-shrink-0" />
+                        <CheckCircle size={18} weight="fill" className="text-success shrink-0" />
                       )}
                     </div>
                     

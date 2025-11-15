@@ -21,12 +21,19 @@ export default async function DashboardLayout(
         redirect( '/sign-in');
     }
 
-    const store = await prismadb.store.findFirst({
-        where: {
-            id: params.storeId,
-            userId: session.user.id
-        }
-    });
+    // Admins can access any store, vendors only their own
+    const store = session.user.role === "ADMIN"
+        ? await prismadb.store.findUnique({
+            where: {
+                id: params.storeId
+            }
+        })
+        : await prismadb.store.findFirst({
+            where: {
+                id: params.storeId,
+                userId: session.user.id
+            }
+        });
 
     if (!store) {
         redirect('/');

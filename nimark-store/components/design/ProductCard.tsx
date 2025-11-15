@@ -26,8 +26,7 @@ export function ProductCard({
   rating,
   reviews,
   vendor,
-  badge,
-  isFeatured = false
+  badge
 }: ProductCardProps) {
   const [isWished, setIsWished] = useState(false)
   const discount = originalPrice ? Math.round(((originalPrice - price) / originalPrice) * 100) : 0
@@ -41,10 +40,7 @@ export function ProductCard({
         <div className="relative aspect-square overflow-hidden bg-muted">
           <div 
             className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-            style={{ 
-              backgroundImage: `url(${image})`,
-              backgroundColor: '#f5f5f5'
-            }}
+            style={{ backgroundImage: `url(${image})` }}
           />
           
           <div className="absolute top-3 left-3 flex gap-2">
@@ -83,7 +79,7 @@ export function ProductCard({
             <span className="text-xs text-muted-foreground">{vendor}</span>
           </div>
           
-          <h3 className="font-semibold text-sm mb-2 line-clamp-2 min-h-[40px]">
+          <h3 className="font-semibold text-sm mb-2 line-clamp-2 min-h-10">
             {name}
           </h3>
 
