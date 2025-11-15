@@ -7,36 +7,62 @@ import { VerticalMainNav } from "./VerticalMainNav"
 
 interface MainNavProps extends React.HTMLAttributes<HTMLElement> {
     className?: string
+    userRole?: string
 }
 
-export function MainNav({ className, ...props }: MainNavProps) {
+export function MainNav({ className, userRole, ...props }: MainNavProps) {
     const pathname = usePathname()
     const params = useParams()
 
-    const routes = [{
+    // Admin-only routes
+    const adminRoutes = userRole === "ADMIN" ? [
+        {
+            href: `/admin`,
+            label: 'Admin Dashboard',
+            active: pathname === `/admin`
+        },
+        {
+            href: `/admin/users`,
+            label: 'Users',
+            active: pathname === `/admin/users`
+        },
+        {
+            href: `/admin/stores`,
+            label: 'All Stores',
+            active: pathname === `/admin/stores`
+        },
+    ] : []
+
+    // Vendor routes (also available to admins when viewing a specific store)
+    const storeRoutes = params.storeId ? [{
         href: `/${params.storeId}`,
         label: 'Overview',
         active: pathname === `/${params.storeId}`
     }, {
         href: `/${params.storeId}/billboards`,
         label: 'Billboards',
-        active: pathname === `/${params.storeId}/billboards`
+        active: pathname === `/${params.storeId}/billboards`,
+        adminOnly: true
     }, {
         href: `/${params.storeId}/categories`,
         label: 'Categories',
-        active: pathname === `/${params.storeId}/categories`
+        active: pathname === `/${params.storeId}/categories`,
+        adminOnly: true
     },{
         href: `/${params.storeId}/brands`,
         label: 'Brands',
-        active: pathname === `/${params.storeId}/brands`
+        active: pathname === `/${params.storeId}/brands`,
+        adminOnly: true
     }, {
         href: `/${params.storeId}/sizes`,
         label: 'Sizes',
-        active: pathname === `/${params.storeId}/sizes`
+        active: pathname === `/${params.storeId}/sizes`,
+        adminOnly: true
     }, {
         href: `/${params.storeId}/colors`,
         label: 'Colors',
-        active: pathname === `/${params.storeId}/colors`
+        active: pathname === `/${params.storeId}/colors`,
+        adminOnly: true
     }, {
         href: `/${params.storeId}/products`,
         label: 'Products',
@@ -49,7 +75,9 @@ export function MainNav({ className, ...props }: MainNavProps) {
         href: `/${params.storeId}/settings`,
         label: 'Settings',
         active: pathname === `/${params.storeId}/settings`
-    }];
+    }].filter(route => !route.adminOnly || userRole === "ADMIN") : []
+
+    const routes = [...adminRoutes, ...storeRoutes]
 
     return (
         <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)} {...props}>

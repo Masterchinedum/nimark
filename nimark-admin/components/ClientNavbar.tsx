@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { VerticalMainNav } from '@/components/VerticalMainNav'
 import { User, LogOut } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 interface ClientNavbarProps {
   stores: Array<{ id: string; name: string }>
@@ -20,6 +21,7 @@ interface ClientNavbarProps {
     name?: string | null
     email?: string | null
     image?: string | null
+    role?: string | null
   }
 }
 
@@ -43,7 +45,7 @@ const ClientNavbar: React.FC<ClientNavbarProps> = ({ stores, user }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-full md:w-56 md:hidden">
-          <VerticalMainNav className="px-4 py-3 w-full" />
+          <VerticalMainNav className="px-4 py-3 w-full" userRole={user?.role || undefined} />
           {/* Show ThemeToggle only in the dropdown menu on small devices */}
           <ThemeToggle />
         </DropdownMenuContent>
@@ -60,7 +62,14 @@ const ClientNavbar: React.FC<ClientNavbarProps> = ({ stores, user }) => {
           {user?.name && (
             <>
               <div className="px-2 py-1.5">
-                <p className="text-sm font-medium">{user.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium">{user.name}</p>
+                  {user.role && (
+                    <Badge variant={user.role === "ADMIN" ? "default" : "secondary"} className="text-xs">
+                      {user.role}
+                    </Badge>
+                  )}
+                </div>
                 {user.email && (
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 )}
