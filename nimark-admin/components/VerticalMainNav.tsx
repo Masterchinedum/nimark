@@ -44,43 +44,16 @@ export function VerticalMainNav({ className, userRole, ...props }: VerticalMainN
                     label: 'Vendor Management',
                     active: pathname === `/admin/stores`
                 },
+                {
+                    href: `/admin/catalog`,
+                    label: 'Catalog Management',
+                    active: pathname.startsWith(`/admin/catalog`)
+                },
             ]
         })
     }
 
-    // Catalog Management (Admin Only - Global)
-    if (userRole === "ADMIN" && params.storeId) {
-        sections.push({
-            title: "Catalog Management",
-            routes: [
-                {
-                    href: `/${params.storeId}/billboards`,
-                    label: 'Billboards',
-                    active: pathname === `/${params.storeId}/billboards`
-                },
-                {
-                    href: `/${params.storeId}/categories`,
-                    label: 'Categories',
-                    active: pathname === `/${params.storeId}/categories`
-                },
-                {
-                    href: `/${params.storeId}/brands`,
-                    label: 'Brands',
-                    active: pathname === `/${params.storeId}/brands`
-                },
-                {
-                    href: `/${params.storeId}/sizes`,
-                    label: 'Sizes',
-                    active: pathname === `/${params.storeId}/sizes`
-                },
-                {
-                    href: `/${params.storeId}/colors`,
-                    label: 'Colors',
-                    active: pathname === `/${params.storeId}/colors`
-                },
-            ]
-        })
-    }
+    // Catalog routes removed - now under /admin/catalog
 
     // Store Operations (Vendors & Admins)
     if (params.storeId) {

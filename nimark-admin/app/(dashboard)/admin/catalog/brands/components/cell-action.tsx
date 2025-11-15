@@ -1,41 +1,40 @@
-//nimark-admin/app/(dashboard)/admin/catalog/billboards/components/cell-action.tsx
+//nimark-admin/app/(dashboard)/[storeId]/brands/components/cell-action.tsx
 
-"use Client"
+"use client"
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { BillboardColumn } from "./columns"
+import { BrandColumn } from "./columns"
 import { Button } from "@/components/ui/button"
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { toast } from "react-hot-toast"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 import { useState } from "react"
 import axios from "axios"
 import { AlertModal } from "@/components/modals/alert-modal"
 
 interface CellActionProps {
-    data: BillboardColumn
+    data: BrandColumn
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
-
     const router = useRouter();
+    const params = useParams();
 
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id);
-        toast.success('Billboard Id copied to the clipboard.')
+        toast.success('Brand Id copied to the clipboard.')
     }
 
     const onDelete = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/admin/billboards/${data.id}`)
+            await axios.delete(`/api/${params.storeId}/brands/${data.id}`)
             router.refresh();
-            toast.success("Billboard deleted successfully.")
+            toast.success("Brand deleted successfully.")
         } catch {
-            toast.error('Error deleting');
+            toast.error('Make sure you removed all products using this brand first.');
         } finally {
             setLoading(false);
             setOpen(false);
@@ -64,11 +63,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Copy className="w-4 h-4 mr-2" />
                         Copy Id
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push(`/admin/catalog/billboards/${data.id}`)}>
+                    <DropdownMenuItem onClick={() => router.push(`/${params.storeId}/brands/${data.id}`)}>
                         <Edit className="w-4 h-4 mr-2" />
                         Update
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-500" onClick={() => setOpen(true)}>
+                    <DropdownMenuItem onClick={() => setOpen(true)}>
                         <Trash className="w-4 h-4 mr-2" />
                         Delete
                     </DropdownMenuItem>

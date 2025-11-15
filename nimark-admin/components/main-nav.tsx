@@ -31,36 +31,14 @@ export function MainNav({ className, userRole, ...props }: MainNavProps) {
             label: 'Vendors',
             active: pathname === `/admin/stores`
         },
+        {
+            href: `/admin/catalog`,
+            label: 'Catalog',
+            active: pathname.startsWith(`/admin/catalog`)
+        },
     ] : []
 
-    // Catalog Management (Admin Only - Global)
-    const catalogRoutes = userRole === "ADMIN" && params.storeId ? [
-        {
-            href: `/${params.storeId}/billboards`,
-            label: 'Billboards',
-            active: pathname === `/${params.storeId}/billboards`
-        },
-        {
-            href: `/${params.storeId}/categories`,
-            label: 'Categories',
-            active: pathname === `/${params.storeId}/categories`
-        },
-        {
-            href: `/${params.storeId}/brands`,
-            label: 'Brands',
-            active: pathname === `/${params.storeId}/brands`
-        },
-        {
-            href: `/${params.storeId}/sizes`,
-            label: 'Sizes',
-            active: pathname === `/${params.storeId}/sizes`
-        },
-        {
-            href: `/${params.storeId}/colors`,
-            label: 'Colors',
-            active: pathname === `/${params.storeId}/colors`
-        },
-    ] : []
+    // Catalog routes removed - now under /admin/catalog
 
     // Store Operations (Vendors & Admins)
     const storeRoutes = params.storeId ? [
@@ -86,7 +64,7 @@ export function MainNav({ className, userRole, ...props }: MainNavProps) {
         },
     ] : []
 
-    const routes = [...platformRoutes, ...catalogRoutes, ...storeRoutes]
+    const routes = [...platformRoutes, ...storeRoutes]
 
     return (
         <nav className={cn("flex items-center space-x-4 lg:space-x-6", className)} {...props}>

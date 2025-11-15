@@ -1,0 +1,92 @@
+import prismadb from "@/lib/prismadb";
+import { requireAdmin } from "@/lib/auth-helpers";
+import { NextResponse } from "next/server"
+
+export async function GET(req: Request, props: { params: Promise<{ billboardId: string }>}) {
+    const params = await props.params;
+    try {
+        if(!params.billboardId) {
+            return new NextResponse("Billboard id is required", { status: 400 });
+        }
+
+        const billboard = await prismadb.billboard.findUnique({
+            where: {
+                id: params.billboardId,
+            }
+        })
+
+        return NextResponse.json(billboard);
+    } catch (err) {
+        console.log('[BILLBOARD_GET]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+};
+
+export async function PATCH(
+    req: Request,
+    props: { params: Promise<{ storeId: string, billboardId: string }>}
+) {
+    const params = await props.params;
+    try {
+        const { userId, role, error } = await requireAdmin();
+        if (error) return error;
+        const body = await req.json();
+
+        const { label, imageUrl } = body;
+
+        if (!label) {
+            return new NextResponse("Label is required", { status: 400 });
+        }
+
+        if (!imageUrl) {
+            return new NextResponse("Image URL is required", { status: 400 });
+        }
+
+        if(!params.billboardId) {
+            return new NextResponse("Billboard id is required", { status: 400 });
+        }
+
+        const billboard = await prismadb.billboard.updateMany({
+            where: {
+                id: params.billboardId
+            },
+            data: {
+                label,
+                imageUrl
+            }
+        })
+
+        return NextResponse.json(billboard);
+    } catch (err) {
+        console.log('[BILLBOARD_PATCH]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+};
+
+//// Delete Method
+
+export async function DELETE(
+    req: Request,
+    props: { params: Promise<{ storeId: string, billboardId: string }>}
+) {
+    const params = await props.params;
+    try {
+        const { userId, role, error } = await requireAdmin();
+        if (error) return error;
+
+        if(!params.billboardId) {
+            return new NextResponse("Billboard id is required", { status: 400 });
+        }
+
+        const billboard = await prismadb.billboard.deleteMany({
+            where: {
+                id: params.billboardId,
+            }
+        })
+
+        return NextResponse.json(billboard);
+    } catch (err) {
+        console.log('[BILLBOARD_DELETE]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+};

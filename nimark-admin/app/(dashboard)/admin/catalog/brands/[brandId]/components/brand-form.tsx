@@ -1,10 +1,10 @@
-//nimark-admin/app/(dashboard)/[storeId]/billboards/[billboardId]/components/billboard-form.tsx
+//nimark-admin/app/(dashboard)/[storeId]/brands/[brandId]/components/brand-form.tsx
 
 "use client"
 
 import { useState } from 'react'
 import * as z from 'zod'
-import { Billboard } from "@prisma/client";
+import { Brand } from "@prisma/client";
 import { Heading } from "@/components/ui/heading";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -19,48 +19,47 @@ import { useParams, useRouter } from 'next/navigation';
 import { AlertModal } from '@/components/modals/alert-modal';
 import ImageUpload from '@/components/ui/image-upload';
 
-interface SettingsFromProps {
-    initialData: Billboard | null; 
+interface BrandFormProps {
+    initialData: Brand | null;
 }
 
 const formSchema = z.object({
-    label: z.string().min(1),
+    name: z.string().min(1),
     imageUrl: z.string().min(1),
 })
 
-type BillboardFormValues = z.infer<typeof formSchema>;
+type BrandFormValues = z.infer<typeof formSchema>;
 
-export const BillboardForm: React.FC<SettingsFromProps> = ({ initialData }) => {
-
+export const BrandForm: React.FC<BrandFormProps> = ({ initialData }) => {
     const params = useParams();
     const router = useRouter();
 
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const title = initialData ? 'Edit billboard' : 'Create billboard'
-    const description = initialData ? 'Edit a billboard' : 'Add a new billboard'
-    const toastMessage = initialData ? 'Billboard updated.' : 'Billboard created.'
+    const title = initialData ? 'Edit brand' : 'Create brand'
+    const description = initialData ? 'Edit a brand' : 'Add a new brand'
+    const toastMessage = initialData ? 'Brand updated.' : 'Brand created.'
     const action = initialData ? 'Save changes' : 'Create'
 
-    const form = useForm<BillboardFormValues>({
+    const form = useForm<BrandFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
-            label: '',
+            name: '',
             imageUrl: ''
         }
     });
 
-    const onSubmit = async (data: BillboardFormValues) => {
+    const onSubmit = async (data: BrandFormValues) => {
         try {
             setLoading(true);
             if (initialData) {
-                await axios.patch(`/api/admin/billboards/${params.billboardId}`, data);
+                await axios.patch(`/api/${params.storeId}/brands/${params.brandId}`, data);
             } else {
-                await axios.post(`/api/admin/billboards`, data);
+                await axios.post(`/api/${params.storeId}/brands`, data);
             }
             router.refresh();
-            router.push(`/admin/catalog/billboards`);
+            router.push(`/${params.storeId}/brands`);
             toast.success(toastMessage)
         } catch(err) {
             toast.error("Something went wrong.");
@@ -72,12 +71,12 @@ export const BillboardForm: React.FC<SettingsFromProps> = ({ initialData }) => {
     const onDelete = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/admin/billboards/${params.billboardId}`);
+            await axios.delete(`/api/${params.storeId}/brands/${params.brandId}`);
             router.refresh();
-            router.push(`/admin/catalog/billboards`);
-            toast.success("Billboard deleted.");
+            router.push(`/${params.storeId}/brands`);
+            toast.success("Brand deleted.");
         } catch(err) {
-            toast.error("Make sure you removed all categories using this billboard first.");
+            toast.error("Make sure you removed all products using this brand first.");
         } finally {
             setLoading(false)
             setOpen(false);
@@ -108,7 +107,7 @@ export const BillboardForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                         name="imageUrl"
                         render={({field}) => (
                             <FormItem>
-                                <FormLabel>Background Image</FormLabel>
+                                <FormLabel>Logo</FormLabel>
                                 <FormControl>
                                     <ImageUpload
                                         value={field.value ? [field.value] : []}
@@ -121,15 +120,15 @@ export const BillboardForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                             </FormItem>
                         )}
                     />
-                    <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <FormField
                             control={form.control} 
-                            name="label"
+                            name="name"
                             render={({field}) => (
                                 <FormItem>
-                                    <FormLabel>Label</FormLabel>
+                                    <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input disabled={loading} placeholder='Billboard label' {...field} />
+                                        <Input disabled={loading} placeholder='Brand name' {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -139,7 +138,6 @@ export const BillboardForm: React.FC<SettingsFromProps> = ({ initialData }) => {
                     <Button disabled={loading} className='ml-auto' type='submit'>{action}</Button>
                 </form>
             </Form>
-            {/* <Separator /> */}
         </>
     )
 }

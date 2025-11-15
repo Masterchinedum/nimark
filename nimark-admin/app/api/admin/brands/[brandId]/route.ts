@@ -1,0 +1,94 @@
+//nimark-admin/app/api/[storeId]/brands/[brandId]/route.ts
+
+import prismadb from "@/lib/prismadb";
+import { requireAdmin } from "@/lib/auth-helpers";
+import { NextResponse } from "next/server"
+
+export async function GET(req: Request, props: { params: Promise<{ brandId: string }>}) {
+    const params = await props.params;
+    try {
+        if(!params.brandId) {
+            return new NextResponse("brand id is required", { status: 400 });
+        }
+
+        const brand = await prismadb.brand.findUnique({
+            where: {
+                id: params.brandId,
+            }
+        })
+
+        return NextResponse.json(brand);
+    } catch (err) {
+        console.log('[BRAND_GET]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+}
+
+export async function PATCH(
+    req: Request,
+    props: { params: Promise<{ storeId: string, brandId: string }>}
+) {
+    const params = await props.params;
+    try {
+        const { userId, role, error } = await requireAdmin();
+        if (error) return error;
+        const body = await req.json();
+
+        const { name, imageUrl } = body;
+
+        if (!name) {
+            return new NextResponse("Name is required", { status: 400 });
+        }
+
+        if (!imageUrl) {
+            return new NextResponse("Image URL is required", { status: 400 });
+        }
+
+        if(!params.brandId) {
+            return new NextResponse("Brand id is required", { status: 400 });
+        }
+
+        const brand = await prismadb.brand.updateMany({
+            where: {
+                id: params.brandId
+            },
+            data: {
+                name,
+                imageUrl
+            }
+        })
+
+        return NextResponse.json(brand);
+    } catch (err) {
+        console.log('[BRAND_PATCH]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+}
+
+//// Delete Method
+
+export async function DELETE(
+    req: Request,
+    props: { params: Promise<{ storeId: string, brandId: string }>}
+) {
+    const params = await props.params;
+    try {
+        const { userId, role, error } = await requireAdmin();
+        if (error) return error;
+
+        if(!params.brandId) {
+            return new NextResponse("Brand id is required", { status: 400 });
+        }
+
+        const brand = await prismadb.brand.deleteMany({
+            where: {
+                id: params.brandId,
+            }
+        })
+
+        return NextResponse.json(brand);
+    } catch (err) {
+        console.log('[BRAND_DELETE]', err)
+        return new NextResponse('Internal error', { status: 500 })
+    }
+}
