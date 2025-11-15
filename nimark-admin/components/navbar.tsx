@@ -13,26 +13,16 @@ const Navbar = async () => {
     redirect('/sign-in')
   }
 
-  // Admins can see all stores, vendors only see their own
-  const stores = session.user.role === "ADMIN" 
-    ? await prismadb?.store.findMany({
-        include: {
-          user: {
-            select: {
-              name: true,
-              email: true,
-            }
-          }
-        },
-        orderBy: {
-          name: 'asc'
-        }
-      })
-    : await prismadb?.store.findMany({
-        where: {
-          userId: session.user.id,
-        },
-      })
+  // Show only stores created by the current user in the store switcher
+  // Admins can still access any store via direct URL (handled in layout)
+  const stores = await prismadb?.store.findMany({
+    where: {
+      userId: session.user.id,
+    },
+    orderBy: {
+      name: 'asc'
+    }
+  })
 
   return (
     <div className='border-b'>

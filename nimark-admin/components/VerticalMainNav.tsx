@@ -40,9 +40,9 @@ export function VerticalMainNav({ className, userRole, ...props }: VerticalMainN
                     active: pathname === `/admin/users`
                 },
                 {
-                    href: `/admin/stores`,
+                    href: `/admin/vendors`,
                     label: 'Vendor Management',
-                    active: pathname === `/admin/stores`
+                    active: pathname.startsWith(`/admin/vendors`)
                 },
                 {
                     href: `/admin/catalog`,

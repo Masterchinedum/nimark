@@ -27,9 +27,9 @@ export function MainNav({ className, userRole, ...props }: MainNavProps) {
             active: pathname === `/admin/users`
         },
         {
-            href: `/admin/stores`,
+            href: `/admin/vendors`,
             label: 'Vendors',
-            active: pathname === `/admin/stores`
+            active: pathname.startsWith(`/admin/vendors`)
         },
         {
             href: `/admin/catalog`,
