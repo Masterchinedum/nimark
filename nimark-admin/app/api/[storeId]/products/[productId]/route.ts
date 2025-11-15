@@ -100,7 +100,7 @@ export async function PATCH(
 
         let finalBrandId = brandId;
         if (!brandId) {
-        const defaultBrand = await getOrCreateDefaultBrand(params.storeId);
+        const defaultBrand = await getOrCreateDefaultBrand();
         finalBrandId = defaultBrand.id;
         }
 

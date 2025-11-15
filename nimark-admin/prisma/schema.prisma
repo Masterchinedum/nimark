@@ -68,12 +68,7 @@ model Store {
   name       String
   userId     String
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  billboards Billboard[] @relation("StoreToBillboard")
-  categories Category[]  @relation("StoreToCategory")
   products   Product[]   @relation("StoreToProduct")
-  sizes      Size[]      @relation("StoreToSize")
-  colors     Color[]     @relation("StoreToColor")
-  brands     Brand[]     @relation("StoreToBrand")
   orders     Order[]     @relation("StoreToOrder")
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -83,21 +78,15 @@ model Store {
 
 model Billboard {
   id         String     @id @default(uuid())
-  storeId    String
-  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
   label      String
   imageUrl   String
   categories Category[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-
-  @@index([storeId])
 }
 
 model Category {
   id          String      @id @default(uuid())
-  storeId     String
-  store       Store       @relation("StoreToCategory", fields: [storeId], references: [id])
   billboardId String
   billboard   Billboard   @relation(fields: [billboardId], references: [id])
   name        String
@@ -109,7 +98,6 @@ model Category {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  @@index([storeId])
   @@index([billboardId])
   @@index([parentId])
 }
@@ -177,42 +165,30 @@ model OrderItem {
 
 model Size {
   id        String    @id @default(uuid())
-  storeId   String // Foreign Key to Store
-  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
   name      String
   value     String
   products  Product[] // Relation to Product model
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-
-  @@index([storeId])
 }
 
 model Brand {
   id        String    @id @default(uuid())
-  storeId   String // Foreign Key to Store
-  store     Store     @relation("StoreToBrand", fields: [storeId], references: [id])
   name      String
   imageUrl   String
   isDefault Boolean   @default(false)
   products  Product[] // Relation to Product model
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-
-  @@index([storeId])
 }
 
 model Color {
   id        String    @id @default(uuid())
-  storeId   String // Foreign Key to Store
-  store     Store     @relation("StoreToColor", fields: [storeId], references: [id])
   name      String
   value     String
   products  Product[] // Relation to Product model
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-
-  @@index([storeId])
 }
 
 model Image {

@@ -11,9 +11,6 @@ const ColorsPage = async (
     const params = await props.params;
 
     const colors = await prismadb.color.findMany({
-        where: {
-            storeId: params.storeId,
-        },
         orderBy: {
             createdAt: 'desc'
         }

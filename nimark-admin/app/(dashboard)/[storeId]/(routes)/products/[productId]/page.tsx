@@ -33,25 +33,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   // Fetch categories for the store
   const categories = await prismadb.category.findMany({
-    where: { storeId },
     orderBy: { name: 'asc' }
   })
 
   // Fetch sizes for the store
   const sizes = await prismadb.size.findMany({
-    where: { storeId },
     orderBy: { name: 'asc' }
   })
 
   // Fetch colors for the store
   const colors = await prismadb.color.findMany({
-    where: { storeId },
     orderBy: { name: 'asc' }
   })
 
   // Fetch brands for the store
   const brands = await prismadb.brand.findMany({
-    where: { storeId },
     orderBy: { name: 'asc' }
   })
 

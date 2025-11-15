@@ -1,7 +1,7 @@
 // nimark-admin/app/api/[storeId]/categories/[categoryId]/route.ts
 
 import prismadb from "@/lib/prismadb";
-import { requireAdmin, assertStoreAccess } from "@/lib/auth-helpers";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request, props: { params: Promise<{ categoryId: string }>}) {
@@ -53,9 +53,6 @@ export async function PATCH(
             return new NextResponse("Category id is required", { status: 400 });
         }
 
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
-
         const category = await prismadb.category.update({
             where: {
                 id: params.categoryId
@@ -87,9 +84,6 @@ export async function DELETE(
         if(!params.categoryId) {
             return new NextResponse("Category id is required", { status: 400 });
         }
-
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
 
         // First, update children categories to remove the parent reference
         await prismadb.category.updateMany({

@@ -69,7 +69,7 @@ export async function POST(req: Request, props: { params: Promise<{ storeId: str
 
         let finalBrandId = brandId;
         if (!brandId) {
-        const defaultBrand = await getOrCreateDefaultBrand(params.storeId);
+        const defaultBrand = await getOrCreateDefaultBrand();
         finalBrandId = defaultBrand.id;
         }
 

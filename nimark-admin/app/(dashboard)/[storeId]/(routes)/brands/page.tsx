@@ -12,9 +12,6 @@ const BrandsPage = async (
 ) => {
     const params = await props.params;
     const brands = await prismadb.brand.findMany({
-        where: {
-            storeId: params.storeId,
-        },
         orderBy: {
             createdAt: 'desc'
         }

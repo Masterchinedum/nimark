@@ -11,9 +11,6 @@ const SizesPage = async (
     const params = await props.params;
 
     const sizes = await prismadb.size.findMany({
-        where: {
-            storeId: params.storeId,
-        },
         orderBy: {
             createdAt: 'desc'
         }

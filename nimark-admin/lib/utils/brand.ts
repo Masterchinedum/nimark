@@ -2,10 +2,9 @@
 
 import prismadb from "@/lib/prismadb";
 
-export async function getOrCreateDefaultBrand(storeId: string | string[]) {
+export async function getOrCreateDefaultBrand() {
   let defaultBrand = await prismadb.brand.findFirst({
     where: { 
-      storeId: typeof storeId === 'string' ? storeId : storeId[0],
       isDefault: true 
     }
   });
@@ -15,8 +14,7 @@ export async function getOrCreateDefaultBrand(storeId: string | string[]) {
       data: {
         name: "Other",
         imageUrl: "./cardboard-box.png", // Replace with an actual default image path
-        isDefault: true,
-        storeId: typeof storeId === 'string' ? storeId : storeId[0],
+        isDefault: true
       }
     });
   }

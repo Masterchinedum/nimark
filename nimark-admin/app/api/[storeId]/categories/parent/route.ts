@@ -4,16 +4,10 @@ import { NextResponse } from "next/server";
 import prismadb from "@/lib/prismadb";
 
 export async function GET(req: Request, props: { params: Promise<{ storeId: string }> }) {
-    const params = await props.params;
     try {
-        if (!params.storeId) {
-            return new NextResponse("Store Id is required", { status: 400});
-        }
-
         // Only fetch parent categories (parentId is null)
         const parentCategories = await prismadb.category.findMany({
             where: {
-                storeId: params.storeId,
                 parentId: null
             },
             orderBy: {
@@ -23,7 +17,6 @@ export async function GET(req: Request, props: { params: Promise<{ storeId: stri
                 id: true,
                 name: true,
                 billboardId: true,
-                storeId: true,
                 createdAt: true,
                 updatedAt: true
             }

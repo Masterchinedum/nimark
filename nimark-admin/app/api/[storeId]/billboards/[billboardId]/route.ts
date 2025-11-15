@@ -1,5 +1,5 @@
 import prismadb from "@/lib/prismadb";
-import { requireAdmin, assertStoreAccess } from "@/lib/auth-helpers";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request, props: { params: Promise<{ billboardId: string }>}) {
@@ -46,9 +46,6 @@ export async function PATCH(
             return new NextResponse("Billboard id is required", { status: 400 });
         }
 
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
-
         const billboard = await prismadb.billboard.updateMany({
             where: {
                 id: params.billboardId
@@ -80,9 +77,6 @@ export async function DELETE(
         if(!params.billboardId) {
             return new NextResponse("Billboard id is required", { status: 400 });
         }
-
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
 
         const billboard = await prismadb.billboard.deleteMany({
             where: {

@@ -16,14 +16,14 @@ const CategoryPage = async (
   });
 
   const billboards = await prismadb.billboard.findMany({
-    where: {
-      storeId: params.storeId
+    orderBy: {
+      createdAt: 'desc'
     }
   });
 
   const categories = await prismadb.category.findMany({
-    where: {
-      storeId: params.storeId
+    orderBy: {
+      createdAt: 'desc'
     }
   });
 

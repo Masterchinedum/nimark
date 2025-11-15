@@ -151,7 +151,7 @@ export const ProductForm: React.FC<ProductFromProps> = ({
     
             let finalBrandId = data.brandId;
             if (!data.brandId) {
-                const defaultBrand = await getOrCreateDefaultBrand(params.storeId as string);
+                const defaultBrand = await getOrCreateDefaultBrand();
                 finalBrandId = defaultBrand.id;
             }
             const payload = {

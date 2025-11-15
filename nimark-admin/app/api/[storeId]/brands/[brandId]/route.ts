@@ -1,7 +1,7 @@
 //nimark-admin/app/api/[storeId]/brands/[brandId]/route.ts
 
 import prismadb from "@/lib/prismadb";
-import { requireAdmin, assertStoreAccess } from "@/lib/auth-helpers";
+import { requireAdmin } from "@/lib/auth-helpers";
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request, props: { params: Promise<{ brandId: string }>}) {
@@ -48,9 +48,6 @@ export async function PATCH(
             return new NextResponse("Brand id is required", { status: 400 });
         }
 
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
-
         const brand = await prismadb.brand.updateMany({
             where: {
                 id: params.brandId
@@ -80,11 +77,8 @@ export async function DELETE(
         if (error) return error;
 
         if(!params.brandId) {
-            return new NextResponse("Color id is required", { status: 400 });
+            return new NextResponse("Brand id is required", { status: 400 });
         }
-
-        const { hasAccess, error: accessError } = await assertStoreAccess(userId!, params.storeId, role!);
-        if (accessError) return accessError;
 
         const brand = await prismadb.brand.deleteMany({
             where: {

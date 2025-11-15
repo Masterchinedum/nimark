@@ -59,11 +59,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id
         token.role = user.role
       }
+      
+      // Fetch role from database if not in token (for existing sessions)
+      if (!token.role && token.id) {
+        const dbUser = await prismadb.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true }
+        })
+        if (dbUser) {
+          token.role = dbUser.role
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {
